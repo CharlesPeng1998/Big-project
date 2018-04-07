@@ -62,6 +62,8 @@ int enter_click(int btn)
 			}
 		}
 	}
+
+	return 1;
 }
 
 //该函数用于移动和选择色块

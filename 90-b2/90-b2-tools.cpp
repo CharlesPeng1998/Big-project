@@ -69,3 +69,70 @@ void input_row_col_tetris(int &row, int &col, int Max_row, int Min_row, int Max_
 
 	cls();
 }
+
+//判断假定方块的位置是否合法
+bool position_legal(Block block, Game_area game_area)
+{
+	int dis_row, dis_col; //矩阵中某点到中心的行列距离
+
+	for (int i = 0; i < BLOCK_ROW; i++)
+	{
+		for (int j = 0; j < BLOCK_COL; j++)
+		{
+			if (block.matrix[i][j] == 1)
+			{
+				dis_row = i - block.central_pos.cord_row;
+				dis_col = j - block.central_pos.cord_col;
+
+				if (block.curr_pos.cord_row + dis_row >= game_area.matrix_row) return 0;
+				else if (block.curr_pos.cord_col + dis_col >= game_area.matrix_col || block.curr_pos.cord_col + dis_col < 0) return 0;
+				else if (game_area.display_matrix[block.curr_pos.cord_row + dis_row][block.curr_pos.cord_col + dis_col] != 0) return 0;
+			}
+		}
+	}
+
+	return 1;
+}
+
+//判定当前方块能否进行某种行为的状态
+bool judge_behavior(Block block, Game_area game_area, int type)
+{
+	switch (type)
+	{
+	case DOWN:
+		draw_block(block, game_area, ELIMINATE_CURR);
+		block.curr_pos.cord_row++;
+		return position_legal(block, game_area);
+	case LEFT:
+		draw_block(block, game_area, ELIMINATE_CURR);
+		block.curr_pos.cord_col--;
+		return position_legal(block, game_area);
+	case RIGHT:
+		draw_block(block, game_area, ELIMINATE_CURR);
+		block.curr_pos.cord_col++;
+		return position_legal(block, game_area);
+	case ROTATE:
+		draw_block(block, game_area, ELIMINATE_CURR);
+		int copy_matrix[BLOCK_ROW][BLOCK_COL] = { 0 };
+		for (int i = 0; i < BLOCK_ROW; i++)
+		{
+			for (int j = 0; j < BLOCK_COL; j++)
+			{
+				if (block.matrix[i][j] != 0)
+				{
+					copy_matrix[4 - j][i] = block.matrix[i][j];
+				}
+			}
+		}
+		for (int i = 0; i < BLOCK_ROW; i++)
+		{
+			for (int j = 0; j < BLOCK_COL; j++)
+			{
+				block.matrix[i][j] = copy_matrix[i][j];
+			}
+		}
+		return position_legal(block, game_area);
+	}
+
+	return 0;
+}

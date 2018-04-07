@@ -79,11 +79,9 @@ struct Block
 	State state;
 };
 
-void print_cmd_game_area(Game_area game_area);
 void input_row_col_tetris(int &row, int &col, int Max_row, int Min_row, int Max_col, int Min_col);
 void cmd_tetris();
 void GUI_tetris();
-void draw_block(Block block, Game_area &game_area, int type);
 void block_move(Block &block, int direction, Game_area &game_area, int type);
 void block_rotate(Block &block, Game_area &game_area, int direction, int type);
 bool position_legal(Block block, Game_area game_area);

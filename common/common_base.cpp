@@ -14,10 +14,10 @@ using namespace std;
 char menu(const char *items[], int n)
 {
 	//记录最大菜单项的长度
-	unsigned max_len = strlen(items[0]);
+	int max_len = int(strlen(items[0]));
 	for (int i = 1; i < n; i++)
 	{
-		if (strlen(items[i]) > max_len) max_len = strlen(items[i]);
+		if (strlen(items[i]) > max_len) max_len = int(strlen(items[i]));
 	}
 
 	while (1)

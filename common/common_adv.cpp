@@ -397,6 +397,8 @@ char confirm_combine(const char *enquire1, const char *enquire2, char input_alph
 
 		else continue;
 	}
+
+	return 1;
 }
 
 /*以下四个函数分别用于键盘操作方块的上下左右移动*/
@@ -639,6 +641,8 @@ int cancel_confirm(int curr_row, int curr_col,int game)
 			else return CANCEL;
 		}
 	}
+
+	return 1;
 }
 
 //该函数用于消除后色块的集体下落
@@ -756,4 +760,6 @@ bool cord_to_rc(int(*rand_matrix)[10], int row, int col, int cord_x, int cord_y,
 		return (legal_row && legal_col && legal_value);
 	}
 	}
+
+	return 1;
 }

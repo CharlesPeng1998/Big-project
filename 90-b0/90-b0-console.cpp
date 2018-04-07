@@ -117,6 +117,8 @@ int kb_confirm()
 			else return CANCEL;
 		}
 	}
+
+	return 1;
 }
 
 //该函数用于伪图形界面下对内部数组进行合成加一操作
