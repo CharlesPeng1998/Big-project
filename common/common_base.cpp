@@ -616,7 +616,6 @@ void print_block(int value, int cord_x, int cord_y,int game,int type)
 
 		setcolor();
 	}
-
 	}
 }
 

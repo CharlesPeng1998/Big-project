@@ -1,12 +1,15 @@
 /*1751367 计2 彭健聪*/
 #pragma once
-/*内部数组移动函数当中选择移动方式的参数*/
-#define DOWN 0
-#define LEFT 1
+//移动的方向
+#define DOWN 1
+#define LEFT 2
+#define RIGHT 3
+#define ROTATE 4
 
 /*显示外边框函数当中选择游戏类型和边框类型的参数*/
 #define MAKE10 1
 #define POPSTAR 0
+#define TETRIS 2
 
 #define DIVIDED 1
 #define UNDIVIDED 0
