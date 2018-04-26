@@ -5,8 +5,54 @@
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
+#include <experimental/filesystem>
 #include "..\common\common_cfgfile_tools.hpp"
 using namespace std;
+
+static int file_length(fstream &fp)
+{
+	int file_len, now_pos;
+
+	/* 当前为错误状态则返回-1 */
+	if (fp.fail())
+		return -1;
+
+	/* 取fp当前指针位置 */
+	now_pos = int(fp.tellg());
+
+	/* 将文件指针移动到最后，此时tellp的结果就是文件大小 */
+	fp.seekg(0, ios::end);
+	file_len = int(fp.tellp());
+
+	/* 指针移动回函数调用前的原位置 */
+	fp.seekg(now_pos, ios::beg);
+
+	return file_len;
+}
+
+static int file_resize(const char *filename, fstream &fp, int newsize)
+{
+	int now_pos;
+
+	/* 当前为错误状态则返回-1 */
+	if (fp.fail())
+		return -1;
+
+	/* 取fp当前指针位置 */
+	now_pos = int(fp.tellg());
+
+	/* 如果大小是负数则直接返回-1 */
+	if (newsize < 0)
+		return -1;
+
+	experimental::filesystem::resize_file(filename, newsize);
+
+	/* 如果当前文件指针超过了文件大小，则回到文件头 */
+	if (now_pos > newsize)
+		fp.seekg(0, ios::beg);
+
+	return 0;
+}
 
 //打开配置文件
 int open_cfgfile(fstream &fp, const char *cfgname, int opt)
@@ -175,12 +221,12 @@ void print_cfg(Group *group_head)
 	}
 }
 
-//该函数将二维链表中的配置信息写入文本文件
-void write_cfg(fstream &cfgfile,Group *group_head)
+//该函数将二维链表中的配置信息写入文本文件(返回文件指针的位置）
+int write_cfg(fstream &cfgfile,Group *group_head)
 {
-	cfgfile.seekg(0, ios::beg);
 	cfgfile.clear();
-
+	cfgfile.seekg(0, ios::beg);
+	
 	Group *group_ptr1 = group_head;
 	cfg_item *item_ptr1 = group_head->item_head;
 
@@ -212,6 +258,8 @@ void write_cfg(fstream &cfgfile,Group *group_head)
 
 		group_ptr1 = group_ptr1->next;
 	}
+
+	return int(cfgfile.tellp());
 }
 
 //该函数用于释放二维链表
@@ -281,7 +329,7 @@ bool item_exist(cfg_item *item_head, const char *item_name)
 	return exist;
 }
 
-//添加配置组(展示先打印在屏幕上检查结果是否无误)
+//添加配置组
 int group_add(fstream &fp, const char *group_name)
 {
 	Group *group_head = read_cfg(fp);
@@ -328,9 +376,8 @@ int group_add(fstream &fp, const char *group_name)
 		return 0;
 	}
 
-	//将链表写入文件
-	print_cfg(group_head);
-	//write_cfg(fp, group_head);
+	//写入文件
+	int curr_pos = write_cfg(fp, group_head);
 
 	//释放链表
 	delete_cfg(group_head);
@@ -390,8 +437,10 @@ int group_del(fstream &fp, const char *filename, const char *group_name)
 		}
 	}
 
-	//测试用
-	print_cfg(group_head);
+	//写入文件
+	int curr_pos = write_cfg(fp, group_head);
+	//压缩文件大小
+	file_resize(filename, fp, curr_pos);
 
 	delete_cfg(group_head);
 
@@ -404,7 +453,7 @@ int item_add(fstream &fp, const char *group_name, const char *item_name, const v
 	Group *group_head = read_cfg(fp);
 	Group *group_ptr = group_head;
 	cfg_item *item_ptr;
-#if 1
+
 	if (!group_exist(group_head, group_name))
 	{
 		delete_cfg(group_head);
@@ -504,8 +553,9 @@ int item_add(fstream &fp, const char *group_name, const char *item_name, const v
 
 		oss >> item_ptr->cfg_item_value;
 	}
-#endif 
-	print_cfg(group_head);
+
+	//写入文件
+	int curr_pos = write_cfg(fp, group_head);
 	
 	delete_cfg(group_head);
 	return 1;
@@ -610,7 +660,10 @@ int item_del(fstream &fp, const char *filename, const char *group_name, const ch
 		delete temp_head;
 	}
 
-	print_cfg(group_head);
+	//写入文件
+	int curr_pos = write_cfg(fp, group_head);
+	//压缩文件大小
+	file_resize(filename, fp, curr_pos);
 	
 	delete_cfg(group_head);
 	return item_num;
@@ -721,7 +774,10 @@ int item_update(fstream &fp, const char *filename, const char *group_name, const
 		group_ptr = group_ptr->next;
 	}
 
-	print_cfg(group_head);
+	//写入文件
+	int curr_pos = write_cfg(fp, group_head);
+	//压缩文件大小
+	file_resize(filename, fp, curr_pos);
 	
 	delete_cfg(group_head);
 	return 1;

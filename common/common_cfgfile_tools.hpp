@@ -43,6 +43,8 @@ enum ITEM_TYPE
 	TYPE_NULL
 };
 
+static int file_length(fstream &fp);
+static int file_resize(const char *filename, fstream &fp, int newsize);
 int open_cfgfile(fstream &fp, const char *cfgname, int opt);
 Group *read_cfg(fstream &cfgfile);
 void print_cfg(Group *group_head);
@@ -51,7 +53,7 @@ bool group_exist(Group *group_head, const char *group_name);
 bool item_exist(cfg_item *item_head, const char *item_name);
 int group_add(fstream &fp, const char *group_name);
 int group_del(fstream &fp, const char *filename, const char *group_name);
-void write_cfg(fstream &cfgfile, Group *group_head);
+int write_cfg(fstream &cfgfile, Group *group_head);
 int item_add(fstream &fp, const char *group_name, const char *item_name, const void *item_value, const enum ITEM_TYPE item_type);
 int item_del(fstream &fp, const char *filename, const char *group_name, const char *item_name);
 int item_update(fstream &fp, const char *filename, const char *group_name, const char *item_name, const void *item_value, const enum ITEM_TYPE item_type);

@@ -1,27 +1,41 @@
 /*1751367 计2 彭健聪*/
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
 #include <fstream>
-#include "..\common\common_cfgfile_tools.hpp"
+#include <cstdio>
 
 using namespace std;
+
+extern "C"
+{
+#include "../common/common_cfgfile_tools.h"
+}
 
 int main()
 {
 
-	fstream cfgfile;
-	if (!open_cfgfile(cfgfile, "test.cfg", OPEN_OPT_RDWR))
+	FILE *cfgfile = open_cfgfile("test.cfg", OPEN_OPT_RDWR);
+
+	if (cfgfile != NULL)
+	{
+		cout << "打开文件成功" << endl;
+	}
+	else
 	{
 		cout << "打开文件失败" << endl;
+		return -1;
 	}
-	else cout << "文件打开成功" << endl;
-	double i;
-	item_get_value(cfgfile, "test1", "item2", &i, TYPE_DOUBLE);
-
-	cout << i << endl;
 
 
+	//group_add(cfgfile, "这是另外一个配置组");
 
+	//int i = 1000999;
+	//item_add(cfgfile, "这是另外一个配置组", "damn", &i, TYPE_INT);
+	
+	item_del(cfgfile, "配置组6", "配置组6-设置项D");
+
+	
 	return 0;
 }

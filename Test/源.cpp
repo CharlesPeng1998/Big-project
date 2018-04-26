@@ -54,5 +54,7 @@ int main()
 
 	file << "fuck\nshit\ndamn\n" << endl;
 
+	cout << file.tellp() << endl;
+
 	return 0;
 }

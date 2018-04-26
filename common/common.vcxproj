@@ -119,7 +119,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="cmd_console_tools.h" />
-    <ClInclude Include="common_cfgfile_tools.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cmd_console_test.cpp" />
