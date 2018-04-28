@@ -4,6 +4,7 @@
 #define DOWN 1
 #define LEFT 2
 #define RIGHT 3
+#define UP 4
 #define ROTATE 4
 
 /*显示外边框函数当中选择游戏类型和边框类型的参数*/
@@ -65,7 +66,7 @@ struct Game_area
 {
 	//定义随机矩阵和标记用矩阵
 	int total_score=0; //记录当前总分
-	int goal; //游戏目标
+	int goal=5; //游戏目标
 	int rand_matrix[8][10] = { 0 };
 	char mark_matrix[8][10];
 	bool divided = 1; //是否需要分割线
@@ -75,6 +76,20 @@ struct Game_area
 	char border[11][3] = { "┏","┗","┓","┛","━","┃", "┳","┻","┣","┫","╋" };//边框类型
 	Color game_area_color = {15,0};
 	Cord orig_cord = { 0,0 };
+
+	int curr_row, curr_col; //记录当前选定色块所在的行列
+	int last_row, last_col; //上次选定色块所在的行列
+
+	int extra_line = 0; //下方空行
+	int extra_col = 0; //右侧空行
+
+	int delay_time = 0;
+
+	int top_info=1;
+	int bot_info=1;
+
+	Color norm_info_color = {15,0};
+	Color warning_color = { 15,14 };
 };
 
 //共用体：色块当中的显示值（可能为整数，可能为星星字符）
@@ -94,6 +109,7 @@ struct Block
 
 	//色块的边框样式
 	char frame[6][3] = { "┏","┗","┓","┛","━","┃" };
+	int move_delay_time=10;
 };
 
 //从配置文件中读取的颜色信息
@@ -125,9 +141,17 @@ void print_frame(int row, int col, int game, int type);
 void print_block(int value, int cord_x, int cord_y, int game, int type);
 void block_move(int(*rand_matrix)[10], int cord_row, int cord_col, int game, int direction);
 void print_game_area(Game_area game_area, Block block);
-void print_block_cfg(int value, Cord cord, Block block, Block_color block_color, int type);
+void print_block_cfg(int value, Game_area game_area, Cord cord, Block block, Block_color block_color, int type);
 void block_move_cfg(Game_area game_area, Block block, Block_color block_color, int cord_row, int cord_col, int direction);
 int read_game_cfg(const char *cfg_name, Game_area &game_area, Block &block, Block_color &block_color);
+void print_game_cfg(Game_area game_area, Block block, Block_color block_color);
+void kb_move_cfg(Game_area &game_area, Block block, Block_color block_color);
+bool cord_to_rc_cfg(Game_area &game_area, Cord cord, Block block);
+void go_cfg(Game_area &game_area, Block block, Block_color block_color, int direction);
+void GUI_full_cfg();
+int cancel_confirm_cfg(Game_area game_area, Block block);
+void block_fall_cfg(Game_area &game_area, Block block, Block_color block_color);
+void print_unicode_cfg(const char *str, const int bg_color, const int fg_color, const int n, int delay_time);
 
 //以下为个人提取部分
 void input_row_col(int &row, int &col,int game);

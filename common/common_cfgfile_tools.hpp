@@ -46,6 +46,7 @@ enum ITEM_TYPE
 static int file_length(fstream &fp);
 static int file_resize(const char *filename, fstream &fp, int newsize);
 int open_cfgfile(fstream &fp, const char *cfgname, int opt);
+void close_cfgfile(fstream &fp);
 Group *read_cfg(fstream &cfgfile);
 void print_cfg(Group *group_head);
 void delete_cfg(Group *group_head);

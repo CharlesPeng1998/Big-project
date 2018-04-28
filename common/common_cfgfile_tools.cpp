@@ -106,11 +106,11 @@ Group *read_cfg(fstream &cfgfile)
 		//考虑本行从开头就是注释的情况
 		if (line[0] == '#')
 		{
-			item_ptr1->type = ANNOTATION;
+			//item_ptr1->type = ANNOTATION;
 			//将本行的全部内容作为注释
-			strcpy(annotation, line);
+			//strcpy(annotation, line);
 
-			strcpy(item_ptr1->annotation, annotation);
+			//strcpy(item_ptr1->annotation, annotation);
 		}
 		else if (line[0] == '[')
 		{
