@@ -24,6 +24,9 @@
     <ClInclude Include="..\common\common.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\common\common_cfgfile_tools.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="90-b0-base.cpp">
@@ -45,6 +48,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\common\common_base.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\common_cfgfile_tools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

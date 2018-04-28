@@ -9,6 +9,7 @@
 #include "..\common\cmd_console_tools.h"
 #include "..\common\common.h"
 #include "90-b0.h"
+#include "..\common\common_cfgfile_tools.hpp"
 #include "../90-b1/90-b1.h"
 using namespace std;
 

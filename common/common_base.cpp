@@ -1,4 +1,5 @@
 /*1751367 计2 彭健聪*/
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <iomanip>
 #include <ctime>
@@ -6,7 +7,9 @@
 #include <cstdio>
 #include <conio.h>
 #include <Windows.h>
+#include <fstream>
 #include "cmd_console_tools.h"
+#include "..\common\common_cfgfile_tools.hpp"
 #include "common.h"
 using namespace std;
 
@@ -679,5 +682,495 @@ void block_move(int(*rand_matrix)[10], int cord_row, int cord_col, int game,int 
 	}
 }
 
+//该函数用于显示游戏区域（配合配置文件使用）
+void print_game_area(Game_area game_area, Block block)
+{
+	//用来临时记录坐标，方便光标的移动
+	Cord temp_cord;
 
+	if (game_area.divided != 1)
+	{
+		//无分割线版本
+		
+		//屏幕大小先这样吧，后续可能会有扩展
+		setconsoleborder(game_area.matrix_col*block.width + 10, game_area.matrix_row*block.height + 10);
+
+		//我打算先把界面显示出来再去考虑显示行列标号
+		gotoxy(game_area.orig_cord.cord_x + 2, game_area.orig_cord.cord_y + 1);
+
+		//以下三句打印上边框
+		print_unicode(game_area.border[0], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+		print_unicode(game_area.border[4], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, game_area.matrix_col * block.width/2);
+		print_unicode(game_area.border[2], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+
+		//打印左右边框
+		for (int i = 0; i < game_area.matrix_row * block.height; i++)
+		{
+			getxy(temp_cord.cord_x, temp_cord.cord_y);
+			gotoxy(game_area.orig_cord.cord_x + 2, temp_cord.cord_y + 1);
+			
+			print_unicode(game_area.border[5], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+			for (int j = 0; j < game_area.matrix_col*block.width; j++)
+			{
+				print_unicode(" ", game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+			}
+
+			print_unicode(game_area.border[5], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+		}
+
+		//打印下边框
+		getxy(temp_cord.cord_x, temp_cord.cord_y);
+		gotoxy(game_area.orig_cord.cord_x + 2, temp_cord.cord_y + 1);
+
+		print_unicode(game_area.border[1], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+		print_unicode(game_area.border[4], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, game_area.matrix_col * block.width / 2);
+		print_unicode(game_area.border[3], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+
+		//然后再考虑要不要打印行列编号
+		if (game_area.show_row_col_number == 1)
+		{
+			setcolor(0, COLOR_HBLUE);
+			
+			gotoxy(game_area.orig_cord.cord_x, game_area.orig_cord.cord_y);
+
+			cout << "      ";
+			//打印列号
+			for (int i = 0; i < game_area.matrix_col; i++)
+			{
+				cout << i;
+				for (int j = 0; j < block.width-1; j++)
+				{
+					cout << ' ';
+				}
+			}
+
+			for (int i = 0; i < 3; i++)
+			{
+				getxy(temp_cord.cord_x, temp_cord.cord_y);
+				gotoxy(game_area.orig_cord.cord_x, temp_cord.cord_y + 1);
+			}
+
+			//打印英文行号
+			for (int i = 0; i < game_area.matrix_row; i++)
+			{
+				cout << char(i + 65);
+
+				for (int j = 0; j < block.height; j++)
+				{
+					getxy(temp_cord.cord_x, temp_cord.cord_y);
+					gotoxy(game_area.orig_cord.cord_x, temp_cord.cord_y + 1);
+				}
+			}
+		}
+	}
+
+	else if (game_area.divided == 1)
+	{
+		//带有分割线版本
+		setconsoleborder(game_area.matrix_col*(block.width+2) + 10, game_area.matrix_row*(block.height+1) + 10);
+
+		gotoxy(game_area.orig_cord.cord_x + 2, game_area.orig_cord.cord_y + 1);
+
+		//打印上边框
+		print_unicode(game_area.border[0], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+
+		for (int i = 0; i < game_area.matrix_col - 1; i++)
+		{
+			print_unicode(game_area.border[4], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 3);
+			print_unicode(game_area.border[6], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+		}
+
+		print_unicode(game_area.border[4], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 3);
+		print_unicode(game_area.border[2], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+
+		for (int i = 0; i < game_area.matrix_row - 1; i++)
+		{
+			for (int j = 0; j < block.height; j++)
+			{
+				getxy(temp_cord.cord_x, temp_cord.cord_y);
+				gotoxy(game_area.orig_cord.cord_x + 2, temp_cord.cord_y + 1);
+
+				print_unicode(game_area.border[5], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+
+				for (int k = 0; k < game_area.matrix_col - 1; k++)
+				{
+					print_unicode(" ", game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, block.width);
+					print_unicode(game_area.border[5], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+				}
+				print_unicode(" ", game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, block.width);
+				print_unicode(game_area.border[5], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+			}
+
+			getxy(temp_cord.cord_x, temp_cord.cord_y);
+			gotoxy(game_area.orig_cord.cord_x + 2, temp_cord.cord_y + 1);
+
+			print_unicode(game_area.border[8], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+			for (int j = 0; j < game_area.matrix_col - 1; j++)
+			{
+				print_unicode(game_area.border[4], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, block.width/2);
+				print_unicode(game_area.border[10], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+			}
+			print_unicode(game_area.border[4], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, block.width / 2);
+			print_unicode(game_area.border[9], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+		}
+
+		for (int j = 0; j < block.height; j++)
+		{
+			getxy(temp_cord.cord_x, temp_cord.cord_y);
+			gotoxy(game_area.orig_cord.cord_x + 2, temp_cord.cord_y + 1);
+
+			print_unicode(game_area.border[5], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+
+			for (int k = 0; k < game_area.matrix_col - 1; k++)
+			{
+				print_unicode(" ", game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, block.width);
+				print_unicode(game_area.border[5], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+			}
+			print_unicode(" ", game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, block.width);
+			print_unicode(game_area.border[5], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+		}
+
+		//打印下边框
+		getxy(temp_cord.cord_x, temp_cord.cord_y);
+		gotoxy(game_area.orig_cord.cord_x + 2, temp_cord.cord_y + 1);
+		print_unicode(game_area.border[1], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+
+		for (int i = 0; i < game_area.matrix_col - 1; i++)
+		{
+			print_unicode(game_area.border[4], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 3);
+			print_unicode(game_area.border[7], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+		}
+
+		print_unicode(game_area.border[4], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 3);
+		print_unicode(game_area.border[3], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+
+		//然后再考虑要不要打印行列编号
+		if (game_area.show_row_col_number == 1)
+		{
+			setcolor(0, COLOR_HBLUE);
+
+			gotoxy(game_area.orig_cord.cord_x, game_area.orig_cord.cord_y);
+
+			cout << "      ";
+			//打印列号
+			for (int i = 0; i < game_area.matrix_col; i++)
+			{
+				cout << i;
+				for (int j = 0; j < block.width+1; j++)
+				{
+					cout << ' ';
+				}
+			}
+
+			for (int i = 0; i < 3; i++)
+			{
+				getxy(temp_cord.cord_x, temp_cord.cord_y);
+				gotoxy(game_area.orig_cord.cord_x, temp_cord.cord_y + 1);
+			}
+
+			//打印英文行号
+			for (int i = 0; i < game_area.matrix_row; i++)
+			{
+				cout << char(i + 65);
+
+				for (int j = 0; j < block.height+1; j++)
+				{
+					getxy(temp_cord.cord_x, temp_cord.cord_y);
+					gotoxy(game_area.orig_cord.cord_x, temp_cord.cord_y + 1);
+				}
+			}
+		}
+	}
+
+	setcolor();
+}
+
+//该函数用于打印一个方块（配合配置文件使用）
+void print_block_cfg(int value, Cord cord, Block block, Block_color block_color, int type)
+{
+	if (block.type == MAKE10)
+	{
+		//游戏为合成十的情况
+		block.value.value_num = value;
+
+		//考虑色块的类型：正常 / 选中 / 空白
+		if (type == CHOSEN)
+		{
+			setcolor(block_color.chosen_block_color.bg_color, block_color.chosen_block_color.fg_color);
+		}
+		else if (type == EMP)
+		{
+			setcolor(block_color.eliminated_block_color.bg_color, block_color.eliminated_block_color.fg_color);
+		}
+		else
+		{
+			//根据值的不同打印不同颜色方块
+			switch (value)
+			{
+			case 1:setcolor(block_color.block_color_1.bg_color, block_color.block_color_1.fg_color); break;
+			case 2:setcolor(block_color.block_color_2.bg_color, block_color.block_color_2.fg_color); break;
+			case 3:setcolor(block_color.block_color_3.bg_color, block_color.block_color_3.fg_color); break;
+			case 4:setcolor(block_color.block_color_4.bg_color, block_color.block_color_4.fg_color); break;
+			case 5:setcolor(block_color.block_color_5.bg_color, block_color.block_color_5.fg_color); break;
+			case 6:setcolor(block_color.block_color_6.bg_color, block_color.block_color_6.fg_color); break;
+			case 7:setcolor(block_color.block_color_7.bg_color, block_color.block_color_7.fg_color); break;
+			case 8:setcolor(block_color.block_color_8.bg_color, block_color.block_color_8.fg_color); break;
+			case 9:setcolor(block_color.block_color_9.bg_color, block_color.block_color_9.fg_color); break;
+			case 10:setcolor(block_color.block_color_10.bg_color, block_color.block_color_10.fg_color); break;
+			case 11:setcolor(block_color.block_color_11.bg_color, block_color.block_color_11.fg_color); break;
+			}
+		}
+	}
+	else if (block.type == POPSTAR)
+	{
+		//游戏为合成十的情况
+		strcpy(block.value.value_star,"★");
+
+		//考虑色块的类型：正常 / 选中 / 空白
+		if (type == CHOSEN)
+		{
+			setcolor(block_color.chosen_block_color.bg_color, block_color.chosen_block_color.fg_color);
+		}
+		else if (type == EMP)
+		{
+			setcolor(block_color.eliminated_block_color.bg_color, block_color.eliminated_block_color.fg_color);
+		}
+		else
+		{
+			//根据值的不同打印不同颜色方块
+			switch (value)
+			{
+			case 1:setcolor(block_color.block_color_1.bg_color, block_color.block_color_1.fg_color); break;
+			case 2:setcolor(block_color.block_color_2.bg_color, block_color.block_color_2.fg_color); break;
+			case 3:setcolor(block_color.block_color_3.bg_color, block_color.block_color_3.fg_color); break;
+			case 4:setcolor(block_color.block_color_4.bg_color, block_color.block_color_4.fg_color); break;
+			case 5:setcolor(block_color.block_color_5.bg_color, block_color.block_color_5.fg_color); break;
+			}
+		}
+	}
+
+	//移动到指定起始坐标
+	gotoxy(cord.cord_x, cord.cord_y);
+
+	//首先打印一个色块的第一行
+	cout << block.frame[0];
+	for (int i = 0; i < block.width / 2 - 2; i++)
+	{
+		cout << block.frame[4];
+	}
+	cout << block.frame[2];
+
+	//接着我们会在第二行当中打印色块的值
+	getxy(cord.cord_x, cord.cord_y);
+	gotoxy(cord.cord_x - block.width, cord.cord_y + 1);
+
+	cout << block.frame[5];
+	for (int i = 0; i < (block.width - 4) / 4; i++)
+	{
+		cout << ' ';
+	}
+
+	switch (block.type)
+	{
+	case POPSTAR:cout << block.value.value_star; break;
+	case MAKE10:cout << setw(2) << block.value.value_num; break;
+	}
+	
+	for (int i = 0; i < (block.width - 4) / 4; i++)
+	{
+		cout << ' ';
+	}
+
+	cout << block.frame[5];
+
+	//接着打印剩下的除最后一行以外的色块边框
+	for (int i = 0; i < block.height - 3; i++)
+	{
+		getxy(cord.cord_x, cord.cord_y);
+		gotoxy(cord.cord_x - block.width, cord.cord_y + 1);
+
+		cout << block.frame[5];
+		for (int i = 0; i < block.width / 2 - 2; i++)
+		{
+			cout << "  ";
+		}
+		cout << block.frame[5];
+	}
+
+	//最后我们打印最后一行
+	getxy(cord.cord_x, cord.cord_y);
+	gotoxy(cord.cord_x - block.width, cord.cord_y + 1);
+
+	cout << block.frame[1];
+	for (int i = 0; i < block.width / 2 - 2; i++)
+	{
+		cout << block.frame[4];
+	}
+	cout << block.frame[3];
+
+	setcolor();
+}
+
+//该函数用于一个色块的移动（配合配置文件使用）
+void block_move_cfg(Game_area game_area, Block block, Block_color block_color, int cord_row, int cord_col, int direction)
+{
+	//记录所移动色块的值
+	int target = game_area.rand_matrix[cord_row][cord_col];
+	
+	//我们先来写没有分割线游戏界面下的移动吧
+	if (game_area.divided != 1)
+	{
+		//该色块在屏幕中的起始坐标
+		Cord orig_cord,curr_cord;
+		orig_cord.cord_x = (game_area.orig_cord.cord_x + 4) + cord_row * block.width;
+		orig_cord.cord_y = (game_area.orig_cord.cord_y + 2) + cord_row * block.height;
+
+		curr_cord.cord_x = orig_cord.cord_x;
+		curr_cord.cord_y = orig_cord.cord_y;
+
+		//当然我们先向下移动
+		if (direction == DOWN)
+		{
+			for (int i = 0; i < block.height + 1; i++)
+			{
+				//色块原位置打印空白
+				print_block_cfg(target, orig_cord, block, block_color, EMP);
+				print_block_cfg(target, curr_cord, block, block_color, NORMAL);
+
+				curr_cord.cord_y;
+				Sleep(10);
+			}
+		}
+
+		//接下来是向左移动
+		else if (direction == LEFT)
+		{
+			for (int i = 0; i < block.width + 1; i++)
+			{
+				//色块原位置打印空白
+				print_block_cfg(target, orig_cord, block, block_color, EMP);
+				print_block_cfg(target, curr_cord, block, block_color, NORMAL);
+
+				curr_cord.cord_x--;
+				Sleep(10);
+			}
+		
+		}
+	}
+
+	//下面来写有分割线版本的
+	else if (game_area.divided == 1)
+	{
+		//该色块在屏幕中的起始坐标
+		Cord orig_cord, curr_cord;
+		orig_cord.cord_x = (game_area.orig_cord.cord_x + 4) + cord_row * (block.width+2);
+		orig_cord.cord_y = (game_area.orig_cord.cord_y + 2) + cord_row * (block.height+1);
+		
+		curr_cord.cord_x = orig_cord.cord_x;
+		curr_cord.cord_y = orig_cord.cord_y;
+
+		if (direction == DOWN)
+		{
+			for (int i = 0; i < block.height + 1; i++)
+			{
+				//色块原位置打印空白
+				print_block_cfg(target, orig_cord, block, block_color, EMP);
+				print_block_cfg(target, curr_cord, block, block_color, NORMAL);
+
+				curr_cord.cord_y++;
+				Sleep(10);
+			}
+
+			print_block_cfg(target, orig_cord, block, block_color, EMP);
+			gotoxy(curr_cord.cord_x, curr_cord.cord_y - 1);
+
+			print_unicode(game_area.border[4], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, block.width / 2);
+			print_block_cfg(target, curr_cord, block, block_color, NORMAL);
+		}
+		else if (direction == LEFT)
+		{
+			Cord temp_cord; //一会移动光标需要用到的临时坐标
+
+			for (int i = 0; i < block.width + 1; i++)
+			{
+				//色块原位置打印空白
+				print_block_cfg(target, orig_cord, block, block_color, EMP);
+				print_block_cfg(target, curr_cord, block, block_color, NORMAL);
+
+				curr_cord.cord_x--;
+				Sleep(10);
+			}
+
+			print_block_cfg(target, orig_cord, block, block_color, EMP);
+			gotoxy(orig_cord.cord_x-2, orig_cord.cord_y);
+
+			for (int i = 0; i < block.height; i++)
+			{
+				print_unicode(game_area.border[5], game_area.game_area_color.bg_color, game_area.game_area_color.fg_color, 1);
+
+				getxy(temp_cord.cord_x, temp_cord.cord_y);
+				gotoxy(temp_cord.cord_x, temp_cord.cord_y + 1);
+			}
+			print_block_cfg(target, curr_cord, block, block_color, NORMAL);
+		}
+	}
+}
+
+//该函数用于从配置文件中读取配置信息
+int read_game_cfg(const char *cfg_name, Game_area &game_area, Block &block, Block_color &block_color)
+{
+	fstream cfgfile;
+
+	if (!open_cfgfile(cfgfile, cfg_name, OPEN_OPT_RDONLY))
+	{
+		cout << "打开配置文件失败";
+		return 0;
+	}
+
+	//首先确定游戏界面是否需要分割线
+	char value;
+	if (item_get_value(cfgfile, "边框设置", "需要分隔线", &value, TYPE_CHARACTER))
+	{
+		if (value == 'y' || value == 'Y')
+		{
+			game_area.divided = 1;
+		}
+		else if (value == 'n' || value == 'N')
+		{
+			game_area.divided = 0;
+		}
+		else game_area.divided = 1;
+	}
+	else
+	{
+		//配置信息读取失败则取缺省值
+		game_area.divided = 1;
+	}
+
+	//确定是否需要显示行列号
+	if (item_get_value(cfgfile, "边框设置", "行号列标显示", &value, TYPE_CHARACTER))
+	{
+		if (value == 'y' || value == 'Y')
+		{
+			game_area.show_row_col_number = 1;
+		}
+		else if (value == 'n' || value == 'N')
+		{
+			game_area.show_row_col_number = 0;
+		}
+		else game_area.show_row_col_number = 1;
+	}
+	else
+	{
+		//配置信息读取失败则取缺省值
+		game_area.show_row_col_number = 1;
+	}
+
+	//读取游戏区域的行列大小
+
+
+
+
+
+}
 

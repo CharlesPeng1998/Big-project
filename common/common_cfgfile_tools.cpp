@@ -98,8 +98,8 @@ Group *read_cfg(fstream &cfgfile)
 		istringstream istr;
 
 		//读取一行
-		char line[MAX_LINE_CHAR_NUM]; //临时存储本行的内容
-		char annotation[MAX_LINE_CHAR_NUM]; //临时存储本行的注释内容
+		char line[MAX_LINE_CHAR_NUM+1]; //临时存储本行的内容
+		char annotation[MAX_LINE_CHAR_NUM+1]; //临时存储本行的注释内容
 
 		cfgfile.getline(line, MAX_LINE_CHAR_NUM, '\n');
 
@@ -153,7 +153,7 @@ Group *read_cfg(fstream &cfgfile)
 				}
 			}
 
-			//将本行加入到字符串流当中
+			//将本行加入到字符串流当中s
 			istr.str(line);
 			//读取项目名
 			istr >> item_ptr1->cfg_item_name;
@@ -161,8 +161,9 @@ Group *read_cfg(fstream &cfgfile)
 			istr >> item_ptr1->cfg_item_value;
 
 			//本行的剩余部分则作为注释
-			istr.getline(annotation, MAX_LINE_CHAR_NUM, '\n');
-			strcpy(item_ptr1->annotation, annotation);
+			//istr.getline(annotation, MAX_LINE_CHAR_NUM, '\n');
+			//istr.getline(annotation, MAX_LINE_CHAR_NUM);
+			//strcpy(item_ptr1->annotation, annotation);
 		}
 
 		/*每次ptr1移动到下一个结点之前将ptr2移动到当前结点
@@ -178,9 +179,19 @@ Group *read_cfg(fstream &cfgfile)
 		else
 		{
 			item_ptr1->next = new cfg_item;
+
+			if (item_ptr1->next == NULL)
+			{
+				cout << "这个地方不大行" << endl;
+				return 0;
+			}
+
 			item_ptr1 = item_ptr1->next;
 		}
 	}
+
+	cfgfile.clear();
+	cfgfile.seekg(0, ios::beg);
 
 	return group_head;
 }
@@ -210,8 +221,8 @@ void print_cfg(Group *group_head)
 			}
 			else if (item_ptr1->type == VALUE)
 			{
-				cout << item_ptr1->cfg_item_name << " = " << item_ptr1->cfg_item_value;
-				cout << item_ptr1->annotation << endl;
+				cout << item_ptr1->cfg_item_name << " = " << item_ptr1->cfg_item_value << endl;;
+				//cout << item_ptr1->annotation << endl;
 			}
 
 			item_ptr1 = item_ptr1->next;
@@ -381,6 +392,10 @@ int group_add(fstream &fp, const char *group_name)
 
 	//释放链表
 	delete_cfg(group_head);
+
+	fp.clear();
+	fp.seekg(0, ios::beg);
+
 	return 1;
 }
 
@@ -443,6 +458,9 @@ int group_del(fstream &fp, const char *filename, const char *group_name)
 	file_resize(filename, fp, curr_pos);
 
 	delete_cfg(group_head);
+
+	fp.clear();
+	fp.seekg(0, ios::beg);
 
 	return group_num;
 }
@@ -558,6 +576,10 @@ int item_add(fstream &fp, const char *group_name, const char *item_name, const v
 	int curr_pos = write_cfg(fp, group_head);
 	
 	delete_cfg(group_head);
+
+	fp.clear();
+	fp.seekg(0, ios::beg);
+
 	return 1;
 }
 
@@ -666,6 +688,10 @@ int item_del(fstream &fp, const char *filename, const char *group_name, const ch
 	file_resize(filename, fp, curr_pos);
 	
 	delete_cfg(group_head);
+
+	fp.clear();
+	fp.seekg(0, ios::beg);
+
 	return item_num;
 }
 
@@ -780,6 +806,10 @@ int item_update(fstream &fp, const char *filename, const char *group_name, const
 	file_resize(filename, fp, curr_pos);
 	
 	delete_cfg(group_head);
+
+	fp.clear();
+	fp.seekg(0, ios::beg);
+
 	return 1;
 }
 
@@ -834,6 +864,9 @@ int item_get_value(fstream &fp, const char *group_name, const char *item_name, v
 		}
 		group_ptr = group_ptr->next;
 	}
+
+	fp.clear();
+	fp.seekg(0, ios::beg);
 
 	return 1;
 }

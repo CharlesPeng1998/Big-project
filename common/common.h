@@ -32,6 +32,95 @@
 #define F 0
 #define G 1
 
+//屏幕坐标结构体
+struct Cord
+{
+	int cord_x;
+	int cord_y;
+};
+
+//矩阵坐标结构体
+struct Position
+{
+	int cord_row;
+	int cord_col;
+};
+
+//控制台窗口结构体，记录控制台窗口大小
+struct Consoleborder
+{
+	int cols;
+	int lines;
+};
+
+//颜色结构体
+struct Color
+{
+	int bg_color;
+	int fg_color;
+};
+
+//cmd版本游戏区域结构体
+struct Game_area
+{
+	//定义随机矩阵和标记用矩阵
+	int total_score=0; //记录当前总分
+	int goal; //游戏目标
+	int rand_matrix[8][10] = { 0 };
+	char mark_matrix[8][10];
+	bool divided = 0; //是否需要分割线
+	bool show_row_col_number = 1; //是否显示行号列标
+	int matrix_row=8;
+	int matrix_col=8;
+	char border[11][3] = { "┏","┗","┓","┛","━","┃", "┳","┻","┣","┫","╋" };//边框类型
+	Color game_area_color;
+	Cord orig_cord;
+};
+
+//共用体：色块当中的显示值（可能为整数，可能为星星字符）
+union value_in_block
+{
+	int value_num;
+	char value_star[3];
+};
+
+//色块结构体
+struct Block
+{
+	int type=MAKE10; //代表色块的类型：MAKE10 / POPSTAR
+	int width = 6; //如果设置为奇数则自动加1
+	int height = 3;
+	value_in_block value;
+
+	//色块的边框样式
+	char frame[6][3] = { "┏","┗","┓","┛","━","┃" };
+
+};
+
+
+
+//从配置文件中读取的颜色信息
+struct Block_color
+{
+	//一共有11组颜色信息,两个游戏共用前5组
+	Color block_color_1;
+	Color block_color_2;
+	Color block_color_3;
+	Color block_color_4;
+	Color block_color_5;
+	Color block_color_6;
+	Color block_color_7;
+	Color block_color_8;
+	Color block_color_9;
+	Color block_color_10;
+	Color block_color_11;
+
+	Color chosen_block_color; //被选中色块颜色
+	Color eliminated_block_color; //色块被消除之后留下的颜色
+};
+
+
+
 //以下为沈坚要求部分
 char menu(const char *items[], int n);
 void mark(int(*rand_matrix)[10], char(*mark_matrix)[10], int cord_row, int cord_col, int Max_row, int Max_col);
@@ -40,6 +129,10 @@ bool end_judge(int(*rand_matrix)[10], int row, int col);
 void print_frame(int row, int col, int game, int type);
 void print_block(int value, int cord_x, int cord_y, int game, int type);
 void block_move(int(*rand_matrix)[10], int cord_row, int cord_col, int game, int direction);
+void print_game_area(Game_area game_area, Block block);
+void print_block_cfg(int value, Cord cord, Block block, Block_color block_color, int type);
+void block_move_cfg(Game_area game_area, Block block, Block_color block_color, int cord_row, int cord_col, int direction);
+int read_game_cfg(const char *cfg_name, Game_area &game_area, Block &block, Block_color &block_color);
 
 //以下为个人提取部分
 void input_row_col(int &row, int &col,int game);

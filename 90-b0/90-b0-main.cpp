@@ -8,11 +8,16 @@
 #include <Windows.h>
 #include "..\common\cmd_console_tools.h"
 #include "..\common\common.h"
+#include "..\common\common_cfgfile_tools.hpp"
 #include "90-b0.h"
+
+#define TEST
+//#define TEST1
 using namespace std;
 
 int main()
 {
+#ifndef TEST	
 	//定义一个指针数组，存放传入菜单函数的菜单选项
 	const char *items[10];
 	items[0] = "1.命令行找出可合并项并标识（非递归）";
@@ -262,5 +267,68 @@ int main()
 			return 0;
 		}
 	}
+
+	
+#endif	
+	
+#ifdef TEST1	
+	fstream cfgfile;
+	open_cfgfile(cfgfile, "test.cfg", OPEN_OPT_RDWR);
+
+	//Group *group_head = read_cfg(cfgfile);
+
+	//print_cfg(group_head);
+
+	//delete_cfg(group_head);
+	
+	Block popstar_block;
+	popstar_block.type = POPSTAR;
+
+	Block_color block_color;
+
+	item_get_value(cfgfile, "色块设置", "色块1-前景色", &block_color.block_color_1.fg_color, TYPE_INT);
+	item_get_value(cfgfile, "色块设置", "色块1-背景色", &block_color.block_color_1.bg_color, TYPE_INT);
+
+	Cord test_cord;
+	test_cord.cord_x = 0;
+	test_cord.cord_y = 0;
+
+	popstar_block.width = 6;
+	popstar_block.height = 3;
+
+	Game_area game_area;
+	game_area.orig_cord.cord_x = 0;
+	game_area.orig_cord.cord_y = 0;
+
+	game_area.game_area_color.bg_color = COLOR_HWHITE;
+	game_area.game_area_color.fg_color = 0;
+
+	print_game_area(game_area, popstar_block);
+#endif 
+
+	//定义游戏区域结构体变量
+	Game_area game_area;
+	//色块结构体变量
+	Block block;
+
+	//从配置文件中读取信息
+
+
+
+
+
+	system("cls");
+	input_rcg(game_area.matrix_row, game_area.matrix_row, game_area.goal);
+
+	//初始化内部数组
+	orig_matrix(game_area.rand_matrix, game_area.matrix_row, game_area.matrix_col, MAKE10);
+	orig_mark(game_area.mark_matrix, game_area.matrix_row, game_area.matrix_col);
+
+	print_game_area(game_area, block);
+
+
+
+
+	return 0;
 
 }

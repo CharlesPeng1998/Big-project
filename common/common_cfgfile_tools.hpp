@@ -10,7 +10,7 @@ using namespace std;
 
 #define OPEN_OPT_RDONLY 0 //以只读方式打开（打不开则返回失败)
 #define OPEN_OPT_RDWR 1 //以读写方式打开（打不开文件则创建）
-#define MAX_LINE_CHAR_NUM 256 //一行可能最多的字符数量
+#define MAX_LINE_CHAR_NUM 600 //一行可能最多的字符数量
 
 //项的类别
 #define ANNOTATION 1

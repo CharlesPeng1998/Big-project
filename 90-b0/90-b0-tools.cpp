@@ -10,6 +10,7 @@
 #include "..\common\common.h"
 #include "90-b0.h"
 #include "../90-b1/90-b1.h"
+#include "..\common\common_cfgfile_tools.hpp"
 using namespace std;
 
 //该函数用于用户输入行列数以及目标值

@@ -120,12 +120,14 @@
   <ItemGroup>
     <ClInclude Include="..\common\cmd_console_tools.h" />
     <ClInclude Include="..\common\common.h" />
+    <ClInclude Include="..\common\common_cfgfile_tools.hpp" />
     <ClInclude Include="90-b0.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\cmd_console_tools.cpp" />
     <ClCompile Include="..\common\common_adv.cpp" />
     <ClCompile Include="..\common\common_base.cpp" />
+    <ClCompile Include="..\common\common_cfgfile_tools.cpp" />
     <ClCompile Include="90-b0-base.cpp" />
     <ClCompile Include="90-b0-console.cpp" />
     <ClCompile Include="90-b0-main.cpp" />
