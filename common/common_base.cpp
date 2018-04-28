@@ -1129,48 +1129,327 @@ int read_game_cfg(const char *cfg_name, Game_area &game_area, Block &block, Bloc
 
 	//首先确定游戏界面是否需要分割线
 	char value;
-	if (item_get_value(cfgfile, "边框设置", "需要分隔线", &value, TYPE_CHARACTER))
+	item_get_value(cfgfile, "边框设置", "需要分隔线", &value, TYPE_CHARACTER);
+
+	if (value == 'y' || value == 'Y')
 	{
-		if (value == 'y' || value == 'Y')
-		{
-			game_area.divided = 1;
-		}
-		else if (value == 'n' || value == 'N')
-		{
-			game_area.divided = 0;
-		}
-		else game_area.divided = 1;
-	}
-	else
-	{
-		//配置信息读取失败则取缺省值
 		game_area.divided = 1;
 	}
+	else if (value == 'n' || value == 'N')
+	{
+		game_area.divided = 0;
+	}
+	else game_area.divided = 1;
 
 	//确定是否需要显示行列号
-	if (item_get_value(cfgfile, "边框设置", "行号列标显示", &value, TYPE_CHARACTER))
+	item_get_value(cfgfile, "边框设置", "行号列标显示", &value, TYPE_CHARACTER);
+	if (value == 'y' || value == 'Y')
 	{
-		if (value == 'y' || value == 'Y')
-		{
-			game_area.show_row_col_number = 1;
-		}
-		else if (value == 'n' || value == 'N')
-		{
-			game_area.show_row_col_number = 0;
-		}
-		else game_area.show_row_col_number = 1;
-	}
-	else
-	{
-		//配置信息读取失败则取缺省值
 		game_area.show_row_col_number = 1;
 	}
+	else if (value == 'n' || value == 'N')
+	{
+		game_area.show_row_col_number = 0;
+	}
+	else game_area.show_row_col_number = 1;
 
 	//读取游戏区域的行列大小
+	item_get_value(cfgfile, "区域设置", "行数", &game_area.matrix_row, TYPE_INT);
+	if (game_area.matrix_row < 5 || game_area.matrix_row > 8)
+	{
+		//超出范围取缺省值
+		game_area.matrix_row = 5;
+	}
+
+	item_get_value(cfgfile, "区域设置", "列数", &game_area.matrix_col, TYPE_INT);
+	if (game_area.matrix_col < 5 || game_area.matrix_col > 10)
+	{
+		//超出范围取缺省值
+		game_area.matrix_col = 5;
+	}
+
+	//读取游戏区域边框的字符
+	item_get_value(cfgfile, "边框设置", "边框线-左上角", game_area.border[0], TYPE_STRING);
+	item_get_value(cfgfile, "边框设置", "边框线-左下角", game_area.border[1], TYPE_STRING);
+	item_get_value(cfgfile, "边框设置", "边框线-右上角", game_area.border[2], TYPE_STRING);
+	item_get_value(cfgfile, "边框设置", "边框线-右下角", game_area.border[3], TYPE_STRING);
+	item_get_value(cfgfile, "边框设置", "边框线-横线", game_area.border[4], TYPE_STRING);
+	item_get_value(cfgfile, "边框设置", "边框线-竖线", game_area.border[5], TYPE_STRING);
+	item_get_value(cfgfile, "边框设置", "边框线-上分隔线", game_area.border[6], TYPE_STRING);
+	item_get_value(cfgfile, "边框设置", "边框线-下分隔线", game_area.border[7], TYPE_STRING);
+	item_get_value(cfgfile, "边框设置", "边框线-左分隔线", game_area.border[8], TYPE_STRING);
+	item_get_value(cfgfile, "边框设置", "边框线-右分隔线角", game_area.border[9], TYPE_STRING);
+	item_get_value(cfgfile, "边框设置", "边框线-中分隔线", game_area.border[10], TYPE_STRING);
+
+	//读取游戏区域颜色
+	item_get_value(cfgfile, "边框设置", "背景色", &game_area.game_area_color.bg_color, TYPE_INT);
+	if (game_area.game_area_color.bg_color < 0 || game_area.game_area_color.bg_color>15)
+	{
+		//背景色超出范围则取缺省值
+		game_area.game_area_color.bg_color = 15;
+	}
+
+	item_get_value(cfgfile, "边框设置", "前景色", &game_area.game_area_color.fg_color, TYPE_INT);
+	if (game_area.game_area_color.fg_color < 0 || game_area.game_area_color.fg_color>15)
+	{
+		//前景色超出范围则取缺省值
+		game_area.game_area_color.fg_color = 0;
+	}
+
+	//读取游戏区域的起始坐标
+	item_get_value(cfgfile, "区域设置", "起始列号", &game_area.orig_cord.cord_x, TYPE_INT);
+	if (game_area.orig_cord.cord_x < 0 || game_area.orig_cord.cord_x>15)
+	{
+		game_area.orig_cord.cord_x = 0;
+	}
+
+	item_get_value(cfgfile, "区域设置", "起始行号", &game_area.orig_cord.cord_y, TYPE_INT);
+	if (game_area.orig_cord.cord_y < 0 || game_area.orig_cord.cord_y > 15)
+	{
+		game_area.orig_cord.cord_y = 0;
+	}
+
+	//读取色块的长和宽
+	item_get_value(cfgfile, "色块设置", "宽度", &block.width, TYPE_INT);
+
+	if (block.width % 2 != 0)
+	{
+		//色块宽度读取到奇数则自动+1
+		block.width++;
+	}
+	
+	if (block.width < 6 || block.width>16)
+	{
+		block.width = 6;
+	}
+
+	item_get_value(cfgfile, "色块设置", "高度", &block.height, TYPE_INT);
+
+	if (block.height < 3 || block.height > 6)
+	{
+		block.height = 6;
+	}
+
+	//读取色块的边框字符
+	item_get_value(cfgfile, "色块设置", "边框线-左上角", game_area.border[0], TYPE_STRING);
+	item_get_value(cfgfile, "色块设置", "边框线-左下角", game_area.border[1], TYPE_STRING);
+	item_get_value(cfgfile, "色块设置", "边框线-右上角", game_area.border[2], TYPE_STRING);
+	item_get_value(cfgfile, "色块设置", "边框线-右下角", game_area.border[3], TYPE_STRING);
+	item_get_value(cfgfile, "色块设置", "边框线-横线", game_area.border[4], TYPE_STRING);
+	item_get_value(cfgfile, "色块设置", "边框线-竖线", game_area.border[5], TYPE_STRING);
+
+	/*在读取色块颜色的时候需要考虑实际的游戏类型，合成十需要用到十一个色块颜色
+	                     而消灭星星只需要用到前五个*/
+	if (block.type == MAKE10)
+	{
+		item_get_value(cfgfile, "色块设置", "色块1-前景色", &block_color.block_color_1.fg_color, TYPE_INT);
+		if (block_color.block_color_1.fg_color < 0 || block_color.block_color_1.fg_color>15)
+		{
+			block_color.block_color_1.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块1-背景色", &block_color.block_color_1.bg_color, TYPE_INT);
+		if (block_color.block_color_1.bg_color < 0 || block_color.block_color_1.bg_color>15)
+		{
+			block_color.block_color_1.bg_color = 1;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块2-前景色", &block_color.block_color_2.fg_color, TYPE_INT);
+		if (block_color.block_color_2.fg_color < 0 || block_color.block_color_2.fg_color>15)
+		{
+			block_color.block_color_2.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块2-背景色", &block_color.block_color_2.bg_color, TYPE_INT);
+		if (block_color.block_color_2.bg_color < 0 || block_color.block_color_2.bg_color>15)
+		{
+			block_color.block_color_2.bg_color = 2;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块3-前景色", &block_color.block_color_3.fg_color, TYPE_INT);
+		if (block_color.block_color_3.fg_color < 0 || block_color.block_color_3.fg_color>15)
+		{
+			block_color.block_color_3.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块3-背景色", &block_color.block_color_3.bg_color, TYPE_INT);
+		if (block_color.block_color_3.bg_color < 0 || block_color.block_color_3.bg_color>15)
+		{
+			block_color.block_color_2.bg_color = 3;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块4-前景色", &block_color.block_color_4.fg_color, TYPE_INT);
+		if (block_color.block_color_4.fg_color < 0 || block_color.block_color_4.fg_color>15)
+		{
+			block_color.block_color_4.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块4-背景色", &block_color.block_color_4.bg_color, TYPE_INT);
+		if (block_color.block_color_4.bg_color < 0 || block_color.block_color_4.bg_color>15)
+		{
+			block_color.block_color_4.bg_color = 4;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块5-前景色", &block_color.block_color_5.fg_color, TYPE_INT);
+		if (block_color.block_color_5.fg_color < 0 || block_color.block_color_5.fg_color>15)
+		{
+			block_color.block_color_5.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块5-背景色", &block_color.block_color_5.bg_color, TYPE_INT);
+		if (block_color.block_color_5.bg_color < 0 || block_color.block_color_5.bg_color>15)
+		{
+			block_color.block_color_5.bg_color = 5;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块6-前景色", &block_color.block_color_6.fg_color, TYPE_INT);
+		if (block_color.block_color_6.fg_color < 0 || block_color.block_color_6.fg_color>15)
+		{
+			block_color.block_color_6.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块6-背景色", &block_color.block_color_6.bg_color, TYPE_INT);
+		if (block_color.block_color_6.bg_color < 0 || block_color.block_color_6.bg_color>15)
+		{
+			block_color.block_color_6.bg_color = 9;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块7-前景色", &block_color.block_color_7.fg_color, TYPE_INT);
+		if (block_color.block_color_7.fg_color < 0 || block_color.block_color_7.fg_color>15)
+		{
+			block_color.block_color_7.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块7-背景色", &block_color.block_color_7.bg_color, TYPE_INT);
+		if (block_color.block_color_7.bg_color < 0 || block_color.block_color_7.bg_color>15)
+		{
+			block_color.block_color_7.bg_color = 10;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块8-前景色", &block_color.block_color_8.fg_color, TYPE_INT);
+		if (block_color.block_color_8.fg_color < 0 || block_color.block_color_8.fg_color>15)
+		{
+			block_color.block_color_8.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块8-背景色", &block_color.block_color_8.bg_color, TYPE_INT);
+		if (block_color.block_color_8.bg_color < 0 || block_color.block_color_8.bg_color>15)
+		{
+			block_color.block_color_8.bg_color = 11;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块9-前景色", &block_color.block_color_9.fg_color, TYPE_INT);
+		if (block_color.block_color_9.fg_color < 0 || block_color.block_color_9.fg_color>15)
+		{
+			block_color.block_color_9.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块9-背景色", &block_color.block_color_9.bg_color, TYPE_INT);
+		if (block_color.block_color_9.bg_color < 0 || block_color.block_color_9.bg_color>15)
+		{
+			block_color.block_color_9.bg_color = 12;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块10-前景色", &block_color.block_color_10.fg_color, TYPE_INT);
+		if (block_color.block_color_10.fg_color < 0 || block_color.block_color_10.fg_color>15)
+		{
+			block_color.block_color_10.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块10-背景色", &block_color.block_color_10.bg_color, TYPE_INT);
+		if (block_color.block_color_10.bg_color < 0 || block_color.block_color_10.bg_color>15)
+		{
+			block_color.block_color_10.bg_color = 13;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块1-前景色", &block_color.block_color_11.fg_color, TYPE_INT);
+		if (block_color.block_color_11.fg_color < 0 || block_color.block_color_11.fg_color>15)
+		{
+			block_color.block_color_11.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块1-背景色", &block_color.block_color_11.bg_color, TYPE_INT);
+		if (block_color.block_color_11.bg_color < 0 || block_color.block_color_11.bg_color>15)
+		{
+			block_color.block_color_11.bg_color = 1;
+		}
+	}
+
+	else if (block.type == POPSTAR)
+	{
+		item_get_value(cfgfile, "色块设置", "色块1-前景色", &block_color.block_color_1.fg_color, TYPE_INT);
+		if (block_color.block_color_1.fg_color < 0 || block_color.block_color_1.fg_color>15)
+		{
+			block_color.block_color_1.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块1-背景色", &block_color.block_color_1.bg_color, TYPE_INT);
+		if (block_color.block_color_1.bg_color < 0 || block_color.block_color_1.bg_color>15)
+		{
+			block_color.block_color_1.bg_color = 9;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块2-前景色", &block_color.block_color_2.fg_color, TYPE_INT);
+		if (block_color.block_color_2.fg_color < 0 || block_color.block_color_2.fg_color>15)
+		{
+			block_color.block_color_2.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块2-背景色", &block_color.block_color_2.bg_color, TYPE_INT);
+		if (block_color.block_color_2.bg_color < 0 || block_color.block_color_2.bg_color>15)
+		{
+			block_color.block_color_2.bg_color = 10;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块3-前景色", &block_color.block_color_3.fg_color, TYPE_INT);
+		if (block_color.block_color_3.fg_color < 0 || block_color.block_color_3.fg_color>15)
+		{
+			block_color.block_color_3.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块3-背景色", &block_color.block_color_3.bg_color, TYPE_INT);
+		if (block_color.block_color_3.bg_color < 0 || block_color.block_color_3.bg_color>15)
+		{
+			block_color.block_color_2.bg_color = 11;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块4-前景色", &block_color.block_color_4.fg_color, TYPE_INT);
+		if (block_color.block_color_4.fg_color < 0 || block_color.block_color_4.fg_color>15)
+		{
+			block_color.block_color_4.fg_color = 12;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块4-背景色", &block_color.block_color_4.bg_color, TYPE_INT);
+		if (block_color.block_color_4.bg_color < 0 || block_color.block_color_4.bg_color>15)
+		{
+			block_color.block_color_4.bg_color = 12;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块5-前景色", &block_color.block_color_5.fg_color, TYPE_INT);
+		if (block_color.block_color_5.fg_color < 0 || block_color.block_color_5.fg_color>15)
+		{
+			block_color.block_color_5.fg_color = 0;
+		}
+
+		item_get_value(cfgfile, "色块设置", "色块5-背景色", &block_color.block_color_5.bg_color, TYPE_INT);
+		if (block_color.block_color_5.bg_color < 0 || block_color.block_color_5.bg_color>15)
+		{
+			block_color.block_color_5.bg_color = 13;
+		}
+	}
 
 
+	//读取选中色块颜色
+	item_get_value(cfgfile, "色块设置", "选中色块背景色", &block_color.chosen_block_color.bg_color, TYPE_INT);
+	if (block_color.chosen_block_color.bg_color < 0 || block_color.chosen_block_color.bg_color > 15)
+	{
+		block_color.chosen_block_color.bg_color = 5;
+	}
 
-
-
+	item_get_value(cfgfile, "色块设置", "选中色块前景色", &block_color.chosen_block_color.fg_color, TYPE_INT);
+	if (block_color.chosen_block_color.fg_color < 0 || block_color.chosen_block_color.fg_color > 15)
+	{
+		block_color.chosen_block_color.fg_color = 7;
+	}
 }
 

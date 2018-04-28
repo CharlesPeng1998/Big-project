@@ -68,13 +68,13 @@ struct Game_area
 	int goal; //游戏目标
 	int rand_matrix[8][10] = { 0 };
 	char mark_matrix[8][10];
-	bool divided = 0; //是否需要分割线
+	bool divided = 1; //是否需要分割线
 	bool show_row_col_number = 1; //是否显示行号列标
-	int matrix_row=8;
-	int matrix_col=8;
+	int matrix_row=5;
+	int matrix_col=5;
 	char border[11][3] = { "┏","┗","┓","┛","━","┃", "┳","┻","┣","┫","╋" };//边框类型
-	Color game_area_color;
-	Cord orig_cord;
+	Color game_area_color = {15,0};
+	Cord orig_cord = { 0,0 };
 };
 
 //共用体：色块当中的显示值（可能为整数，可能为星星字符）
@@ -94,29 +94,24 @@ struct Block
 
 	//色块的边框样式
 	char frame[6][3] = { "┏","┗","┓","┛","━","┃" };
-
 };
-
-
 
 //从配置文件中读取的颜色信息
 struct Block_color
 {
 	//一共有11组颜色信息,两个游戏共用前5组
-	Color block_color_1;
-	Color block_color_2;
-	Color block_color_3;
-	Color block_color_4;
-	Color block_color_5;
-	Color block_color_6;
-	Color block_color_7;
-	Color block_color_8;
-	Color block_color_9;
-	Color block_color_10;
-	Color block_color_11;
-
+	Color block_color_1 = { 1,0 };
+	Color block_color_2 = { 2,0 };
+	Color block_color_3 = { 3,0 };
+	Color block_color_4 = { 4,0 };
+	Color block_color_5 = { 5,0 };
+	Color block_color_6 = { 9,0 };
+	Color block_color_7 = { 10,0 };
+	Color block_color_8 = { 11,0 };
+	Color block_color_9 = { 12,0 };
+	Color block_color_10 = { 13,0 };
+	Color block_color_11 = { 1,0 };
 	Color chosen_block_color; //被选中色块颜色
-	Color eliminated_block_color; //色块被消除之后留下的颜色
 };
 
 
