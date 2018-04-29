@@ -148,7 +148,7 @@ void print_game_cfg(Game_area game_area, Block block, Block_color block_color);
 void kb_move_cfg(Game_area &game_area, Block block, Block_color block_color);
 bool cord_to_rc_cfg(Game_area &game_area, Cord cord, Block block);
 void go_cfg(Game_area &game_area, Block block, Block_color block_color, int direction);
-void GUI_full_cfg();
+void GUI_full_cfg(char *cfgfile_name);
 int cancel_confirm_cfg(Game_area game_area, Block block);
 void block_fall_cfg(Game_area &game_area, Block block, Block_color block_color);
 void print_unicode_cfg(const char *str, const int bg_color, const int fg_color, const int n, int delay_time);

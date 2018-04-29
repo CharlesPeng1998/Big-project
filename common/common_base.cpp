@@ -2051,7 +2051,7 @@ void go_cfg(Game_area &game_area, Block block, Block_color block_color, int dire
 }
 
 //可读取配置文件版本的伪图形界面完整游戏版本
-void GUI_full_cfg()
+void GUI_full_cfg(char *cfgfile_name)
 {
 	Cord orig_cord; //这个东西在打印色块的时候进行坐标定位的时候需要
 
@@ -2067,7 +2067,7 @@ void GUI_full_cfg()
 	Block_color block_color;
 
 	//从配置文件中读取信息
-	read_game_cfg("test.cfg", game_area, make10_block, block_color);
+	read_game_cfg(cfgfile_name, game_area, make10_block, block_color);
 
 	//初始化内部数组
 	orig_matrix(game_area.rand_matrix, game_area.matrix_row, game_area.matrix_col, MAKE10);
@@ -2112,8 +2112,8 @@ void GUI_full_cfg()
 
 		if (game_area.bot_info)
 		{
-			gotoxy(0, game_area.orig_cord.cord_y + game_area.matrix_row*(make10_block.height + 1) + 3);
-			cout << "                                                              ";
+			//gotoxy(0, game_area.orig_cord.cord_y + game_area.matrix_row*(make10_block.height + 1) + 3);
+			//cout << "                                                              ";
 			gotoxy(0, game_area.orig_cord.cord_y + game_area.matrix_row*(make10_block.height + 1) + 3);
 			setcolor(game_area.norm_info_color.bg_color, game_area.norm_info_color.fg_color);
 			cout << "箭头键/鼠标移动，回车键/单机左键选择并结束";
@@ -2129,12 +2129,26 @@ void GUI_full_cfg()
 				gotoxy(0, game_area.orig_cord.cord_y + game_area.matrix_row*(make10_block.height + 1) + 3);
 				cout << "                                                              ";
 				setcolor(game_area.warning_color.bg_color, game_area.warning_color.fg_color);
-				gotoxy(0, game_area.orig_cord.cord_y + game_area.matrix_row*(make10_block.height + 1) + 3);
+				
+				gotoxy(42, game_area.orig_cord.cord_y + game_area.matrix_row*(make10_block.height + 1) + 3);
 				cout << "周围无相同值!";
-				setcolor(game_area.norm_info_color.bg_color, game_area.norm_info_color.fg_color);
-				cout << "箭头键/鼠标移动，回车键/单击左键选择";
 				setcolor();
 			}
+
+			switch (game_area.divided)
+			{
+			case 1:
+				orig_cord.cord_x = (game_area.orig_cord.cord_x + 4) + game_area.curr_col * (make10_block.width + 2);
+				orig_cord.cord_y = (game_area.orig_cord.cord_y + 2) + game_area.curr_row * (make10_block.height + 1);
+				break;
+
+			case 0:
+				orig_cord.cord_x = (game_area.orig_cord.cord_x + 4) + game_area.curr_col * make10_block.width;
+				orig_cord.cord_y = (game_area.orig_cord.cord_y + 2) + game_area.curr_row * make10_block.height;
+				break;
+			}
+
+			print_block_cfg(game_area.rand_matrix[game_area.curr_row][game_area.curr_col], game_area, orig_cord, make10_block, block_color, NORMAL);
 			continue;
 		}
 
