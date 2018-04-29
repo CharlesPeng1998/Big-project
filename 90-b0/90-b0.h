@@ -21,3 +21,7 @@ void print_shiny(int value, int cord_x, int cord_y);
 int GUI_combine(int(*rand_matrix)[10], char(*mark_matrix)[10], int row, int col, int curr_row, int curr_col);
 void nine_GUI_complete(int(*rand_matrix)[10], char(*mark_matrix)[10], int row, int col, int &goal, int &score, int &total_score);
 void kb_mouse_move(int(*rand_matrix)[10], char(*mark_matrix)[10], int row, int col, int &curr_row, int &curr_col, int &last_row, int &last_col);
+
+void GUI_full_cfg(char *cfgfile_name);
+
+int read_game_cfg(const char *cfg_name, Game_area &game_area, Block &block, Block_color &block_color);

@@ -81,8 +81,8 @@ void close_cfgfile(fstream &fp)
 	fp.close();
 }
 
-//该函数用于读取配置文件并生成二维链表
-Group *read_cfg(fstream &cfgfile)
+//该函数用于读取配置文件并生成二维链表(忽略注释，在游戏当中读取配置文件使用）
+Group *read_cfg_no_anno(fstream &cfgfile)
 {
 	//创建表头
 	Group *group_head = new Group;
@@ -813,10 +813,10 @@ int item_update(fstream &fp, const char *filename, const char *group_name, const
 	return 1;
 }
 
-//获取项的值
+//获取项的值(忽略注释）
 int item_get_value(fstream &fp, const char *group_name, const char *item_name, void *item_value, const enum ITEM_TYPE item_type)
 {
-	Group *group_head = read_cfg(fp);
+	Group *group_head = read_cfg_no_anno(fp);
 	Group *group_ptr = group_head;
 	cfg_item *item_ptr;
 
@@ -869,4 +869,119 @@ int item_get_value(fstream &fp, const char *group_name, const char *item_name, v
 	fp.seekg(0, ios::beg);
 
 	return 1;
+}
+
+//该函数用于读取配置文件并生成二维链表(不忽略注释，互测使用）
+Group *read_cfg(fstream &cfgfile)
+{
+	//创建表头
+	Group *group_head = new Group;
+	group_head->item_head = new cfg_item;
+
+	Group *group_ptr1 = group_head;
+	cfg_item *item_ptr1 = group_head->item_head;
+	cfg_item *item_ptr2 = item_ptr1;
+
+	while (!cfgfile.eof())
+	{
+		//字符串流
+		istringstream istr;
+
+		//读取一行
+		char line[MAX_LINE_CHAR_NUM + 1]; //临时存储本行的内容
+		char annotation[MAX_LINE_CHAR_NUM + 1]; //临时存储本行的注释内容
+
+		cfgfile.getline(line, MAX_LINE_CHAR_NUM, '\n');
+
+		//考虑本行从开头就是注释的情况
+		if (line[0] == '#')
+		{
+			item_ptr1->type = ANNOTATION;
+			//将本行的全部内容作为注释
+			strcpy(annotation, line);
+
+			strcpy(item_ptr1->annotation, annotation);
+		}
+		else if (line[0] == '[')
+		{
+			/*若发现了一个组名，则需要结束当前组的项链表的建立，
+			并且创建一个新的组结点，重新开始项链表的建立*/
+
+			//结束当前组的项链表的建立
+			if (item_ptr1 != item_ptr2)
+			{
+				delete item_ptr1;
+				item_ptr2->next = NULL;
+			}
+			else item_ptr1->next = NULL;
+
+			group_ptr1->next = new Group;
+			group_ptr1 = group_ptr1->next;
+			group_ptr1->item_head = new cfg_item;
+
+			item_ptr1 = group_ptr1->item_head;
+			item_ptr2 = item_ptr1;
+
+			//赋值组名
+			line[strlen(line) - 1] = '\0';
+			strcpy(group_ptr1->group_name, line + 1);
+
+			continue;
+		}
+		else if (line[0] != '\0')
+		{
+			item_ptr1->type = VALUE;
+			//本行为有效项（非注释）的情况
+
+			//将本行中第一个等号改为空格，方便后续的读取
+			for (int i = 0; i < int(strlen(line)); i++)
+			{
+				if (line[i] == '=')
+				{
+					line[i] = ' ';
+					break;
+				}
+			}
+
+			//将本行加入到字符串流当中s
+			istr.str(line);
+			//读取项目名
+			istr >> item_ptr1->cfg_item_name;
+			//读取项目值
+			istr >> item_ptr1->cfg_item_value;
+
+			//本行的剩余部分则作为注释
+			istr.getline(annotation, MAX_LINE_CHAR_NUM, '\n');
+			istr.getline(annotation, MAX_LINE_CHAR_NUM);
+			strcpy(item_ptr1->annotation, annotation);
+		}
+
+		/*每次ptr1移动到下一个结点之前将ptr2移动到当前结点
+		以便于创建一个新的组结点时，将当前的项结点指向NULL*/
+		item_ptr2 = item_ptr1;
+
+		if (cfgfile.eof())
+		{
+			//如果文件读取完毕则将结点指向NULL
+			item_ptr1->next = NULL;
+			group_ptr1->next = NULL;
+		}
+		else
+		{
+			item_ptr1->next = new cfg_item;
+
+			if (item_ptr1->next == NULL)
+			{
+				cout << "这个地方不大行" << endl;
+				return 0;
+			}
+
+			item_ptr1 = item_ptr1->next;
+		}
+	}
+
+	cfgfile.clear();
+	cfgfile.seekg(0, ios::beg);
+
+	return group_head;
 }

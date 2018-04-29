@@ -67,15 +67,15 @@ struct Game_area
 	//定义随机矩阵和标记用矩阵
 	int total_score=0; //记录当前总分
 	int goal=5; //游戏目标
-	int rand_matrix[8][10] = { 0 };
-	char mark_matrix[8][10];
+	int rand_matrix[10][10] = { 0 };
+	char mark_matrix[10][10];
 	bool divided = 1; //是否需要分割线
 	bool show_row_col_number = 1; //是否显示行号列标
 	int matrix_row=5;
 	int matrix_col=5;
 	char border[11][3] = { "┏","┗","┓","┛","━","┃", "┳","┻","┣","┫","╋" };//边框类型
 	Color game_area_color = {15,0};
-	Cord orig_cord = { 0,0 };
+	Cord orig_cord = { 1,1 };
 
 	int curr_row, curr_col; //记录当前选定色块所在的行列
 	int last_row, last_col; //上次选定色块所在的行列
@@ -143,12 +143,10 @@ void block_move(int(*rand_matrix)[10], int cord_row, int cord_col, int game, int
 void print_game_area(Game_area game_area, Block block);
 void print_block_cfg(int value, Game_area game_area, Cord cord, Block block, Block_color block_color, int type);
 void block_move_cfg(Game_area game_area, Block block, Block_color block_color, int cord_row, int cord_col, int direction);
-int read_game_cfg(const char *cfg_name, Game_area &game_area, Block &block, Block_color &block_color);
 void print_game_cfg(Game_area game_area, Block block, Block_color block_color);
 void kb_move_cfg(Game_area &game_area, Block block, Block_color block_color);
 bool cord_to_rc_cfg(Game_area &game_area, Cord cord, Block block);
 void go_cfg(Game_area &game_area, Block block, Block_color block_color, int direction);
-void GUI_full_cfg(char *cfgfile_name);
 int cancel_confirm_cfg(Game_area game_area, Block block);
 void block_fall_cfg(Game_area &game_area, Block block, Block_color block_color);
 void print_unicode_cfg(const char *str, const int bg_color, const int fg_color, const int n, int delay_time);

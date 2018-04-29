@@ -163,6 +163,7 @@ Group *read_cfg(FILE *cfgfile)
 		}
 	}
 
+	fseek(cfgfile, 0, SEEK_SET);
 	return group_head;
 }
 
@@ -365,6 +366,8 @@ int group_add(FILE *cfgfile, const char *group_name)
 
 	//释放链表
 	delete_cfg(group_head);
+
+	fseek(cfgfile, 0, SEEK_SET);
 	return 1;
 }
 
@@ -427,6 +430,8 @@ int group_del(FILE *fp, const char *group_name)
 	file_resize(fp, curr_pos);
 
 	delete_cfg(group_head);
+
+	fseek(fp, 0, SEEK_SET);
 
 	return group_num;
 }
@@ -561,6 +566,8 @@ int item_add(FILE *fp, const char *group_name, const char *item_name, const void
 	int curr_pos = write_cfg(fp, group_head);
 
 	delete_cfg(group_head);
+
+	fseek(fp, 0, SEEK_SET);
 	return 1;
 }
 
@@ -673,6 +680,8 @@ int item_del(FILE *fp, const char *group_name, const char *item_name)
 	file_resize(fp, curr_pos);
 
 	delete_cfg(group_head);
+
+	fseek(fp, 0, SEEK_SET);
 	return item_num;
 }
 
@@ -804,13 +813,15 @@ int item_update(FILE *fp, const char *group_name, const char *item_name, const v
 	file_resize(fp, curr_pos);
 
 	delete_cfg(group_head);
+
+	fseek(fp, 0, SEEK_SET);
 	return 1;
 }
 
 //获取项的值
 int item_get_value(FILE *fp, const char *group_name, const char *item_name, void *item_value, const enum ITEM_TYPE item_type)
 {
-	Group *group_head = read_cfg(fp);
+	Group *group_head = read_cfg_no_anno(fp);
 	Group *group_ptr = group_head;
 	cfg_item *item_ptr;
 
@@ -864,5 +875,106 @@ int item_get_value(FILE *fp, const char *group_name, const char *item_name, void
 		group_ptr = group_ptr->next;
 	}
 
+	fseek(fp, 0, SEEK_SET);
+
 	return 1;
+}
+
+//该函数用于读取配置文件并生成二维链表（忽略注释，取配置值使用）
+Group *read_cfg_no_anno(FILE *cfgfile)
+{
+	//创建表头
+	Group *group_head = (Group *)malloc(sizeof(Group));
+	init_Group(group_head);
+
+	group_head->item_head = (cfg_item *)malloc(sizeof(cfg_item));
+	init_cfg_item(group_head->item_head);
+
+	Group *group_ptr1 = group_head;
+	cfg_item *item_ptr1 = group_head->item_head;
+	cfg_item *item_ptr2 = item_ptr1;
+
+	//读取一行
+	char line[MAX_LINE_CHAR_NUM]; //临时存储本行的内容
+
+	while (fgets(line, MAX_LINE_CHAR_NUM, cfgfile))
+	{
+		//考虑本行从开头就是注释的情况
+		if (line[0] == '#')
+		{
+			//item_ptr1->type = ANNOTATION;
+
+			//sscanf(line, "%s", item_ptr1->annotation);
+		}
+		else if (line[0] == '[')
+		{
+			/*若发现了一个组名，则需要结束当前组的项链表的建立，
+			并且创建一个新的组结点，重新开始项链表的建立*/
+
+			//结束当前组的项链表的建立
+			if (item_ptr1 != item_ptr2)
+			{
+				free(item_ptr1);
+				item_ptr2->next = NULL;
+			}
+			else item_ptr1->next = NULL;
+
+			group_ptr1->next = (Group *)malloc(sizeof(Group));
+			init_Group(group_ptr1->next);
+
+			group_ptr1 = group_ptr1->next;
+			group_ptr1->item_head = (cfg_item *)malloc(sizeof(cfg_item));
+			init_cfg_item(group_ptr1->item_head);
+
+			item_ptr1 = group_ptr1->item_head;
+			item_ptr2 = item_ptr1;
+
+			//赋值组名
+			line[strlen(line) - 2] = '\0';
+			strcpy(group_ptr1->group_name, line + 1);
+
+			continue;
+		}
+		else if (line[0] != '\0')
+		{
+			item_ptr1->type = VALUE;
+			//本行为有效项（非注释）的情况
+
+			//将本行中第一个等号改为空格，方便后续的读取
+			for (int i = 0; i < (int)(strlen(line)); i++)
+			{
+				if (line[i] == '=')
+				{
+					line[i] = ' ';
+					break;
+				}
+			}
+
+			sscanf(line, "%s%s",
+				item_ptr1->cfg_item_name,
+				item_ptr1->cfg_item_value);
+		}
+
+		/*每次ptr1移动到下一个结点之前将ptr2移动到当前结点
+		以便于创建一个新的组结点时，将当前的项结点指向NULL*/
+		item_ptr2 = item_ptr1;
+
+		if (feof(cfgfile))
+		{
+			//如果文件读取完毕则将结点指向NULL
+			item_ptr1->next = NULL;
+			group_ptr1->next = NULL;
+		}
+		else
+		{
+			item_ptr1->next = (cfg_item*)malloc(sizeof(cfg_item));
+			init_cfg_item(item_ptr1->next);
+
+			item_ptr1 = item_ptr1->next;
+		}
+	}
+
+	fseek(cfgfile, 0, SEEK_SET);
+
+	return group_head;
 }

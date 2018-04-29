@@ -18,9 +18,6 @@
     <ClInclude Include="90-b0.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\cmd_console_tools.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\common.h">
       <Filter>头文件</Filter>
     </ClInclude>

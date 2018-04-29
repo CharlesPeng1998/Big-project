@@ -39,6 +39,7 @@ static int file_resize(FILE *fp, int newsize);
 void init_cfg_item(cfg_item *item);
 void init_Group(Group *group);
 Group *read_cfg(FILE *cfgfile);
+Group *read_cfg_no_anno(FILE *cfgfile);
 void print_cfg(Group *group_head);
 int write_cfg(FILE *cfgfile, Group *group_head);
 void delete_cfg(Group *group_head);
