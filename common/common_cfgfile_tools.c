@@ -443,14 +443,14 @@ int item_add(FILE *fp, const char *group_name, const char *item_name, const void
 	Group *group_ptr = group_head;
 	cfg_item *item_ptr;
 
-	if (!group_exist(group_head, group_name))
-	{
-		delete_cfg(group_head);
-		return 0;
-	}
-
 	if (group_name != NULL)
 	{
+		if (!group_exist(group_head, group_name))
+		{
+			delete_cfg(group_head);
+			return 0;
+		}
+
 		//遍历二维链表,寻找指定配置组
 		while (group_ptr != NULL)
 		{
@@ -578,19 +578,19 @@ int item_del(FILE *fp, const char *group_name, const char *item_name)
 	//首先还是得先建立二维链表
 	Group *group_head = read_cfg(fp);
 
-	//若该组不存在，则返回0
-	if (!group_exist(group_head, group_name))
-	{
-		delete_cfg(group_head);
-		return 0;
-	}
-
 	Group *group_ptr = group_head;
 	cfg_item *item_ptr1;
 	cfg_item *item_ptr2;
 
 	if (group_name != NULL)
 	{
+		//若该组不存在，则返回0
+		if (!group_exist(group_head, group_name))
+		{
+			delete_cfg(group_head);
+			return 0;
+		}
+
 		while (group_ptr != NULL)
 		{
 			if (strcmp(group_ptr->group_name, group_name) == 0)

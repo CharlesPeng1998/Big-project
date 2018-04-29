@@ -57,22 +57,29 @@ static int file_resize(const char *filename, fstream &fp, int newsize)
 //打开配置文件
 int open_cfgfile(fstream &fp, const char *cfgname, int opt)
 {	
-	switch (opt)
+	if (opt == OPEN_OPT_RDONLY)
 	{
-	case OPEN_OPT_RDONLY:
 		fp.open(cfgname, ios::in);
-		break;	
 
-	case OPEN_OPT_RDWR:
-		fp.open(cfgname, ios::in | ios::out);
-		break;
+		if (fp.is_open())
+		{
+			return 1;
+		}
+		else return 0;
 	}
-
-	if (fp.is_open())
+	else if (opt == OPEN_OPT_RDWR)
 	{
+		fp.open(cfgname, ios::in | ios::out);
+		if (fp.is_open())
+		{
+			return 1;
+		}
+
+		fp.open(cfgname, ios::out | ios::in | ios::trunc); //建立文件
 		return 1;
 	}
-	else return 0;
+
+	return 0;
 }
 
 //关闭配置文件
@@ -472,14 +479,14 @@ int item_add(fstream &fp, const char *group_name, const char *item_name, const v
 	Group *group_ptr = group_head;
 	cfg_item *item_ptr;
 
-	if (!group_exist(group_head, group_name))
-	{
-		delete_cfg(group_head);
-		return 0;
-	}
-
 	if (group_name != NULL)
 	{
+		if (!group_exist(group_head, group_name))
+		{
+			delete_cfg(group_head);
+			return 0;
+		}
+
 		//遍历二维链表,寻找指定配置组
 		while (group_ptr != NULL)
 		{
@@ -533,7 +540,7 @@ int item_add(fstream &fp, const char *group_name, const char *item_name, const v
 	{
 		//若组名为NULL，则在最后一组添加最后一项
 
-		//便利到最后一个配置组
+		//遍历到最后一个配置组
 		while (group_ptr->next != NULL)
 		{
 			group_ptr = group_ptr->next;
@@ -590,19 +597,19 @@ int item_del(fstream &fp, const char *filename, const char *group_name, const ch
 	//首先还是得先建立二维链表
 	Group *group_head = read_cfg(fp);
 
-	//若该组不存在，则返回0
-	if (!group_exist(group_head, group_name))
-	{
-		delete_cfg(group_head);
-		return 0;
-	}
-
 	Group *group_ptr = group_head;
 	cfg_item *item_ptr1;
 	cfg_item *item_ptr2;
 
 	if (group_name != NULL)
 	{
+		//若该组不存在，则返回0
+		if (!group_exist(group_head, group_name))
+		{
+			delete_cfg(group_head);
+			return 0;
+		}
+
 		while (group_ptr != NULL)
 		{
 			if (strcmp(group_ptr->group_name, group_name) == 0)
