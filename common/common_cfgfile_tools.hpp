@@ -16,7 +16,7 @@ using namespace std;
 #define ANNOTATION 1
 #define VALUE 2
 
-struct cfg_item {
+struct cfgitem {
 	char cfg_item_name[32] = { 0 };
 
 	int type = NULL; /*该项的类别（在这个程序当中我们认为每一行都是一个项）
@@ -24,13 +24,13 @@ struct cfg_item {
 
 	char cfg_item_value[128] = { 0 }; //值一律作为字符串处理
 	char annotation[50] = { 0 }; //记录该行的注释 
-	cfg_item *next=NULL;
+	cfgitem *next=NULL;
 };
 
 struct Group
 {
 	char group_name[32] = { 0 };
-	cfg_item *item_head=NULL;
+	cfgitem *item_head=NULL;
 	Group *next=NULL;
 };
 
@@ -52,7 +52,7 @@ Group *read_cfg(fstream &cfgfile);
 void print_cfg(Group *group_head);
 void delete_cfg(Group *group_head);
 bool group_exist(Group *group_head, const char *group_name);
-bool item_exist(cfg_item *item_head, const char *item_name);
+bool item_exist(cfgitem *item_head, const char *item_name);
 int group_add(fstream &fp, const char *group_name);
 int group_del(fstream &fp, const char *filename, const char *group_name);
 int write_cfg(fstream &cfgfile, Group *group_head);

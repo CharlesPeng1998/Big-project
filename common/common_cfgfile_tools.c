@@ -8,7 +8,7 @@
 #include "..\common\common_cfgfile_tools.h"
 
 //cfg_item结构体初始化函数
-void init_cfg_item(cfg_item *item)
+void init_cfg_item(cfgitem *item)
 {
 	item->cfg_item_name[0] = '\0';
 	item->annotation[0] = '\0';
@@ -75,12 +75,12 @@ Group *read_cfg(FILE *cfgfile)
 	Group *group_head = (Group *)malloc(sizeof(Group));
 	init_Group(group_head);
 
-	group_head->item_head = (cfg_item *)malloc(sizeof(cfg_item));
+	group_head->item_head = (cfgitem *)malloc(sizeof(cfgitem));
 	init_cfg_item(group_head->item_head);
 
 	Group *group_ptr1 = group_head;
-	cfg_item *item_ptr1 = group_head->item_head;
-	cfg_item *item_ptr2 = item_ptr1;
+	cfgitem *item_ptr1 = group_head->item_head;
+	cfgitem *item_ptr2 = item_ptr1;
 
 	//读取一行
 	char line[MAX_LINE_CHAR_NUM]; //临时存储本行的内容
@@ -111,7 +111,7 @@ Group *read_cfg(FILE *cfgfile)
 			init_Group(group_ptr1->next);
 
 			group_ptr1 = group_ptr1->next;
-			group_ptr1->item_head = (cfg_item *)malloc(sizeof(cfg_item));
+			group_ptr1->item_head = (cfgitem *)malloc(sizeof(cfgitem));
 			init_cfg_item(group_ptr1->item_head);
 
 			item_ptr1 = group_ptr1->item_head;
@@ -156,7 +156,7 @@ Group *read_cfg(FILE *cfgfile)
 		}
 		else
 		{
-			item_ptr1->next = (cfg_item*)malloc(sizeof(cfg_item));
+			item_ptr1->next = (cfgitem*)malloc(sizeof(cfgitem));
 			init_cfg_item(item_ptr1->next);
 
 			item_ptr1 = item_ptr1->next;
@@ -171,7 +171,7 @@ Group *read_cfg(FILE *cfgfile)
 void print_cfg(Group *group_head)
 {
 	Group *group_ptr1 = group_head;
-	cfg_item *item_ptr1 = group_head->item_head;
+	cfgitem *item_ptr1 = group_head->item_head;
 
 	while (group_ptr1 != NULL)
 	{
@@ -208,7 +208,7 @@ int write_cfg(FILE *cfgfile, Group *group_head)
 	fseek(cfgfile, 0, SEEK_SET);
 
 	Group *group_ptr1 = group_head;
-	cfg_item *item_ptr1 = group_head->item_head;
+	cfgitem *item_ptr1 = group_head->item_head;
 
 	while (group_ptr1 != NULL)
 	{
@@ -249,8 +249,8 @@ void delete_cfg(Group *group_head)
 {
 	Group *group_ptr1 = group_head;
 	Group *group_ptr2 = group_head;
-	cfg_item *item_ptr1 = group_head->item_head;
-	cfg_item *item_ptr2 = group_head->item_head;
+	cfgitem *item_ptr1 = group_head->item_head;
+	cfgitem *item_ptr2 = group_head->item_head;
 
 	while (group_ptr1 != NULL)
 	{
@@ -292,10 +292,10 @@ int group_exist(Group *group_head, const char *group_name)
 }
 
 //检查配置组中指定项是否存在
-int item_exist(cfg_item *item_head, const char *item_name)
+int item_exist(cfgitem *item_head, const char *item_name)
 {
 	int exist = 0;
-	cfg_item *item_ptr = item_head;
+	cfgitem *item_ptr = item_head;
 
 	while (item_ptr != NULL)
 	{
@@ -314,6 +314,11 @@ int item_exist(cfg_item *item_head, const char *item_name)
 //添加配置组
 int group_add(FILE *cfgfile, const char *group_name)
 {
+	if (group_name == NULL)
+	{
+		return 0;
+	}
+
 	Group *group_head = read_cfg(cfgfile);
 
 	//若该组已存在，则返回0
@@ -347,7 +352,7 @@ int group_add(FILE *cfgfile, const char *group_name)
 
 	/*开一个空项,个人感觉这个步骤有必要
 	不然在后续的项处理当中可能会遇到麻烦*/
-	group_ptr->next->item_head = (cfg_item *)malloc(sizeof(cfg_item));
+	group_ptr->next->item_head = (cfgitem *)malloc(sizeof(cfgitem));
 	init_cfg_item(group_ptr->next->item_head);
 	
 	if (group_ptr->next->item_head = NULL)
@@ -376,6 +381,11 @@ int group_del(FILE *fp, const char *group_name)
 {
 	//将一个配置组结点及其以下的项链表释放，并将前一结点连接到后一结点
 
+	if (group_name == NULL)
+	{
+		return 0;
+	}
+
 	int group_num = 0;
 	//首先还是得先建立二维链表
 	Group *group_head = read_cfg(fp);
@@ -390,8 +400,8 @@ int group_del(FILE *fp, const char *group_name)
 	Group *group_ptr1 = group_head;
 	Group *group_ptr2 = group_head;
 
-	cfg_item *item_ptr1;
-	cfg_item *item_ptr2;
+	cfgitem *item_ptr1;
+	cfgitem *item_ptr2;
 
 	while (group_ptr1->next != NULL)
 	{
@@ -441,7 +451,7 @@ int item_add(FILE *fp, const char *group_name, const char *item_name, const void
 {
 	Group *group_head = read_cfg(fp);
 	Group *group_ptr = group_head;
-	cfg_item *item_ptr;
+	cfgitem *item_ptr;
 
 	if (group_name != NULL)
 	{
@@ -470,7 +480,7 @@ int item_add(FILE *fp, const char *group_name, const char *item_name, const void
 					item_ptr = item_ptr->next;
 				}
 
-				item_ptr->next = (cfg_item *)malloc(sizeof(cfg_item));
+				item_ptr->next = (cfgitem *)malloc(sizeof(cfgitem));
 				init_cfg_item(item_ptr->next);
 
 				if (item_ptr->next == NULL)
@@ -527,7 +537,7 @@ int item_add(FILE *fp, const char *group_name, const char *item_name, const void
 			item_ptr = item_ptr->next;
 		}
 
-		item_ptr->next = (cfg_item *)malloc(sizeof(cfg_item));
+		item_ptr->next = (cfgitem *)malloc(sizeof(cfgitem));
 		init_cfg_item(item_ptr->next);
 
 		if (item_ptr->next == NULL)
@@ -579,8 +589,8 @@ int item_del(FILE *fp, const char *group_name, const char *item_name)
 	Group *group_head = read_cfg(fp);
 
 	Group *group_ptr = group_head;
-	cfg_item *item_ptr1;
-	cfg_item *item_ptr2;
+	cfgitem *item_ptr1;
+	cfgitem *item_ptr2;
 
 	if (group_name != NULL)
 	{
@@ -603,7 +613,7 @@ int item_del(FILE *fp, const char *group_name, const char *item_name)
 				}
 
 				//创建一个临时表头
-				cfg_item *temp_head = (cfg_item *)malloc(sizeof(cfg_item));
+				cfgitem *temp_head = (cfgitem *)malloc(sizeof(cfgitem));
 				init_cfg_item(temp_head);
 
 				temp_head->next = group_ptr->item_head;
@@ -647,7 +657,7 @@ int item_del(FILE *fp, const char *group_name, const char *item_name)
 		}
 
 		//创建一个临时表头
-		cfg_item *temp_head = (cfg_item *)malloc(sizeof(cfg_item));
+		cfgitem *temp_head = (cfgitem *)malloc(sizeof(cfgitem));
 		init_cfg_item(temp_head);
 
 		temp_head->next = group_head->item_head;
@@ -690,8 +700,8 @@ int item_update(FILE *fp, const char *group_name, const char *item_name, const v
 {
 	Group *group_head = read_cfg(fp);
 	Group *group_ptr = group_head;
-	cfg_item *item_ptr1;
-	cfg_item *item_ptr2;
+	cfgitem *item_ptr1;
+	cfgitem *item_ptr2;
 
 	//指定配置组不存在则返回0
 	if (!group_exist(group_head, group_name))
@@ -714,7 +724,7 @@ int item_update(FILE *fp, const char *group_name, const char *item_name, const v
 					item_ptr1 = item_ptr1->next;
 				}
 
-				item_ptr1->next = (cfg_item *)malloc(sizeof(cfg_item));
+				item_ptr1->next = (cfgitem *)malloc(sizeof(cfgitem));
 				init_cfg_item(item_ptr1->next);
 
 				if (item_ptr1->next == NULL)
@@ -823,7 +833,7 @@ int item_get_value(FILE *fp, const char *group_name, const char *item_name, void
 {
 	Group *group_head = read_cfg_no_anno(fp);
 	Group *group_ptr = group_head;
-	cfg_item *item_ptr;
+	cfgitem *item_ptr;
 
 	//指定配置组不存在，返回0
 	if (!group_exist(group_head, group_name))
@@ -887,12 +897,12 @@ Group *read_cfg_no_anno(FILE *cfgfile)
 	Group *group_head = (Group *)malloc(sizeof(Group));
 	init_Group(group_head);
 
-	group_head->item_head = (cfg_item *)malloc(sizeof(cfg_item));
+	group_head->item_head = (cfgitem *)malloc(sizeof(cfgitem));
 	init_cfg_item(group_head->item_head);
 
 	Group *group_ptr1 = group_head;
-	cfg_item *item_ptr1 = group_head->item_head;
-	cfg_item *item_ptr2 = item_ptr1;
+	cfgitem *item_ptr1 = group_head->item_head;
+	cfgitem *item_ptr2 = item_ptr1;
 
 	//读取一行
 	char line[MAX_LINE_CHAR_NUM]; //临时存储本行的内容
@@ -923,7 +933,7 @@ Group *read_cfg_no_anno(FILE *cfgfile)
 			init_Group(group_ptr1->next);
 
 			group_ptr1 = group_ptr1->next;
-			group_ptr1->item_head = (cfg_item *)malloc(sizeof(cfg_item));
+			group_ptr1->item_head = (cfgitem *)malloc(sizeof(cfgitem));
 			init_cfg_item(group_ptr1->item_head);
 
 			item_ptr1 = group_ptr1->item_head;
@@ -967,7 +977,7 @@ Group *read_cfg_no_anno(FILE *cfgfile)
 		}
 		else
 		{
-			item_ptr1->next = (cfg_item*)malloc(sizeof(cfg_item));
+			item_ptr1->next = (cfgitem*)malloc(sizeof(cfgitem));
 			init_cfg_item(item_ptr1->next);
 
 			item_ptr1 = item_ptr1->next;

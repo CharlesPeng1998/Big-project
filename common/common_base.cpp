@@ -694,7 +694,7 @@ void print_game_area(Game_area game_area, Block block)
 		//无分割线版本
 
 		//屏幕大小先这样吧，后续可能会有扩展
-		setconsoleborder(game_area.matrix_col*block.width + 10, game_area.matrix_row*block.height + 10);
+		setconsoleborder(game_area.matrix_col*block.width + 10+game_area.extra_col, game_area.matrix_row*block.height + 10+game_area.extra_line);
 
 		//我打算先把界面显示出来再去考虑显示行列标号
 		gotoxy(game_area.orig_cord.cord_x + 2, game_area.orig_cord.cord_y + 1);

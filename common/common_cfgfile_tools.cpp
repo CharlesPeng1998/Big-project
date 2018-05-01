@@ -93,11 +93,11 @@ Group *read_cfg_no_anno(fstream &cfgfile)
 {
 	//创建表头
 	Group *group_head = new Group;
-	group_head->item_head = new cfg_item;
+	group_head->item_head = new cfgitem;
 
 	Group *group_ptr1 = group_head;
-	cfg_item *item_ptr1 = group_head->item_head;
-	cfg_item *item_ptr2 = item_ptr1;
+	cfgitem *item_ptr1 = group_head->item_head;
+	cfgitem *item_ptr2 = item_ptr1;
 
 	while (!cfgfile.eof())
 	{
@@ -106,7 +106,6 @@ Group *read_cfg_no_anno(fstream &cfgfile)
 
 		//读取一行
 		char line[MAX_LINE_CHAR_NUM+1]; //临时存储本行的内容
-		char annotation[MAX_LINE_CHAR_NUM+1]; //临时存储本行的注释内容
 
 		cfgfile.getline(line, MAX_LINE_CHAR_NUM, '\n');
 
@@ -134,7 +133,7 @@ Group *read_cfg_no_anno(fstream &cfgfile)
 
 			group_ptr1->next = new Group;
 			group_ptr1 = group_ptr1->next;
-			group_ptr1->item_head = new cfg_item;
+			group_ptr1->item_head = new cfgitem;
 
 			item_ptr1 = group_ptr1->item_head;
 			item_ptr2 = item_ptr1;
@@ -185,7 +184,7 @@ Group *read_cfg_no_anno(fstream &cfgfile)
 		}
 		else
 		{
-			item_ptr1->next = new cfg_item;
+			item_ptr1->next = new cfgitem;
 
 			if (item_ptr1->next == NULL)
 			{
@@ -207,7 +206,7 @@ Group *read_cfg_no_anno(fstream &cfgfile)
 void print_cfg(Group *group_head)
 {
 	Group *group_ptr1 = group_head;
-	cfg_item *item_ptr1 = group_head->item_head;
+	cfgitem *item_ptr1 = group_head->item_head;
 
 	while (group_ptr1 != NULL)
 	{
@@ -246,7 +245,7 @@ int write_cfg(fstream &cfgfile,Group *group_head)
 	cfgfile.seekg(0, ios::beg);
 	
 	Group *group_ptr1 = group_head;
-	cfg_item *item_ptr1 = group_head->item_head;
+	cfgitem *item_ptr1 = group_head->item_head;
 
 	while (group_ptr1 != NULL)
 	{
@@ -285,8 +284,8 @@ void delete_cfg(Group *group_head)
 {
 	Group *group_ptr1 = group_head;
 	Group *group_ptr2 = group_head;
-	cfg_item *item_ptr1 = group_head->item_head;
-	cfg_item *item_ptr2 = group_head->item_head;
+	cfgitem *item_ptr1 = group_head->item_head;
+	cfgitem *item_ptr2 = group_head->item_head;
 
 	while (group_ptr1 != NULL)
 	{
@@ -328,10 +327,10 @@ bool group_exist(Group *group_head,const char *group_name)
 }
 
 //检查配置组中指定项是否存在
-bool item_exist(cfg_item *item_head, const char *item_name)
+bool item_exist(cfgitem *item_head, const char *item_name)
 {
 	bool exist = 0;
-	cfg_item *item_ptr = item_head;
+	cfgitem *item_ptr = item_head;
 
 	while (item_ptr != NULL)
 	{
@@ -350,6 +349,11 @@ bool item_exist(cfg_item *item_head, const char *item_name)
 //添加配置组
 int group_add(fstream &fp, const char *group_name)
 {
+	if (group_name == NULL)
+	{
+		return 0;
+	}
+
 	Group *group_head = read_cfg(fp);
 
 	//若该组已存在，则返回0
@@ -381,7 +385,7 @@ int group_add(fstream &fp, const char *group_name)
 
 	/*开一个空项,个人感觉这个步骤有必要
 	不然在后续的项处理当中可能会遇到麻烦*/
-	group_ptr->next->item_head = new cfg_item;
+	group_ptr->next->item_head = new cfgitem;
 
 	if (group_ptr->next->item_head = NULL)
 	{
@@ -409,6 +413,11 @@ int group_add(fstream &fp, const char *group_name)
 //删除配置组
 int group_del(fstream &fp, const char *filename, const char *group_name)
 {
+	if (group_name == NULL)
+	{
+		return 0;
+	}
+
 	//将一个配置组结点及其以下的项链表释放，并将前一结点连接到后一结点
 	
 	int group_num=0;
@@ -425,8 +434,8 @@ int group_del(fstream &fp, const char *filename, const char *group_name)
 	Group *group_ptr1 = group_head;
 	Group *group_ptr2 = group_head;
 
-	cfg_item *item_ptr1;
-	cfg_item *item_ptr2;
+	cfgitem *item_ptr1;
+	cfgitem *item_ptr2;
 
 	while (group_ptr1->next != NULL)
 	{
@@ -477,7 +486,7 @@ int item_add(fstream &fp, const char *group_name, const char *item_name, const v
 {
 	Group *group_head = read_cfg(fp);
 	Group *group_ptr = group_head;
-	cfg_item *item_ptr;
+	cfgitem *item_ptr;
 
 	if (group_name != NULL)
 	{
@@ -506,7 +515,7 @@ int item_add(fstream &fp, const char *group_name, const char *item_name, const v
 					item_ptr = item_ptr->next;
 				}
 
-				item_ptr->next = new cfg_item;
+				item_ptr->next = new cfgitem;
 				if (item_ptr->next == NULL)
 				{
 					//内存申请失败，判定添加项失败
@@ -553,7 +562,7 @@ int item_add(fstream &fp, const char *group_name, const char *item_name, const v
 			item_ptr = item_ptr->next;
 		}
 
-		item_ptr->next = new cfg_item;
+		item_ptr->next = new cfgitem;
 		if (item_ptr->next == NULL)
 		{
 			//内存申请失败，判定添加项失败
@@ -598,8 +607,8 @@ int item_del(fstream &fp, const char *filename, const char *group_name, const ch
 	Group *group_head = read_cfg(fp);
 
 	Group *group_ptr = group_head;
-	cfg_item *item_ptr1;
-	cfg_item *item_ptr2;
+	cfgitem *item_ptr1;
+	cfgitem *item_ptr2;
 
 	if (group_name != NULL)
 	{
@@ -622,7 +631,7 @@ int item_del(fstream &fp, const char *filename, const char *group_name, const ch
 				}
 				
 				//创建一个临时表头
-				cfg_item *temp_head = new cfg_item;
+				cfgitem *temp_head = new cfgitem;
 				temp_head->next = group_ptr->item_head;
 
 				item_ptr1 = item_ptr2 = temp_head;
@@ -664,7 +673,7 @@ int item_del(fstream &fp, const char *filename, const char *group_name, const ch
 		}
 		
 		//创建一个临时表头
-		cfg_item *temp_head = new cfg_item;
+		cfgitem *temp_head = new cfgitem;
 		temp_head->next = group_head->item_head;
 
 		item_ptr1 = item_ptr2 = temp_head;
@@ -707,8 +716,8 @@ int item_update(fstream &fp, const char *filename, const char *group_name, const
 {
 	Group *group_head = read_cfg(fp);
 	Group *group_ptr = group_head;
-	cfg_item *item_ptr1;
-	cfg_item *item_ptr2;
+	cfgitem *item_ptr1;
+	cfgitem *item_ptr2;
 
 	//指定配置组不存在则返回0
 	if (!group_exist(group_head, group_name))
@@ -731,7 +740,7 @@ int item_update(fstream &fp, const char *filename, const char *group_name, const
 					item_ptr1 = item_ptr1->next;
 				}
 
-				item_ptr1->next = new cfg_item;
+				item_ptr1->next = new cfgitem;
 
 				if (item_ptr1->next == NULL)
 				{
@@ -825,7 +834,7 @@ int item_get_value(fstream &fp, const char *group_name, const char *item_name, v
 {
 	Group *group_head = read_cfg_no_anno(fp);
 	Group *group_ptr = group_head;
-	cfg_item *item_ptr;
+	cfgitem *item_ptr;
 
 	//指定配置组不存在，返回0
 	if (!group_exist(group_head, group_name))
@@ -883,11 +892,11 @@ Group *read_cfg(fstream &cfgfile)
 {
 	//创建表头
 	Group *group_head = new Group;
-	group_head->item_head = new cfg_item;
+	group_head->item_head = new cfgitem;
 
 	Group *group_ptr1 = group_head;
-	cfg_item *item_ptr1 = group_head->item_head;
-	cfg_item *item_ptr2 = item_ptr1;
+	cfgitem *item_ptr1 = group_head->item_head;
+	cfgitem *item_ptr2 = item_ptr1;
 
 	while (!cfgfile.eof())
 	{
@@ -924,7 +933,7 @@ Group *read_cfg(fstream &cfgfile)
 
 			group_ptr1->next = new Group;
 			group_ptr1 = group_ptr1->next;
-			group_ptr1->item_head = new cfg_item;
+			group_ptr1->item_head = new cfgitem;
 
 			item_ptr1 = group_ptr1->item_head;
 			item_ptr2 = item_ptr1;
@@ -975,7 +984,7 @@ Group *read_cfg(fstream &cfgfile)
 		}
 		else
 		{
-			item_ptr1->next = new cfg_item;
+			item_ptr1->next = new cfgitem;
 
 			if (item_ptr1->next == NULL)
 			{

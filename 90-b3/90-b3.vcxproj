@@ -121,11 +121,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\common_cfgfile_tools.c" />
+    <ClCompile Include="..\common\common_cfgfile_tools.cpp" />
     <ClCompile Include="90-b3.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\common\common_cfgfile_tools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
