@@ -71,7 +71,7 @@ void input_row_col_tetris(int &row, int &col, int Max_row, int Min_row, int Max_
 }
 
 //判断假定方块的位置是否合法
-bool position_legal(Block block, Game_area game_area)
+bool position_legal(tBlock block, tGame_area game_area)
 {
 	int dis_row, dis_col; //矩阵中某点到中心的行列距离
 
@@ -95,7 +95,7 @@ bool position_legal(Block block, Game_area game_area)
 }
 
 //判定当前方块能否进行某种行为的状态
-bool judge_behavior(Block block, Game_area game_area, int type)
+bool judge_behavior(tBlock block, tGame_area game_area, int type)
 {
 	switch (type)
 	{

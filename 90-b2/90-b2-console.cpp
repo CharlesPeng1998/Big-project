@@ -12,7 +12,7 @@
 using namespace std;
 
 //游戏区域内部数组当中打印一个方块
-void draw_block(Block block, Game_area &game_area, int type)
+void draw_block(tBlock block, tGame_area &game_area, int type)
 {
 	int dis_row, dis_col; //矩阵中某点到中心的行列距离
 	for (int i = 0; i < BLOCK_ROW; i++)
@@ -40,7 +40,7 @@ void draw_block(Block block, Game_area &game_area, int type)
 }
 
 //方块的移动
-void block_move(Block &block, int direction, Game_area &game_area, int type)
+void block_move(tBlock &block, int direction, tGame_area &game_area, int type)
 {
 	block.last_pos = block.curr_pos;
 
@@ -56,7 +56,7 @@ void block_move(Block &block, int direction, Game_area &game_area, int type)
 }
 
 //方块的旋转
-void block_rotate(Block &block, Game_area &game_area, int direction, int type)
+void block_rotate(tBlock &block, tGame_area &game_area, int direction, int type)
 {
 	draw_full_block(block, game_area, ELIMINATE_CURR);
 	
@@ -86,7 +86,7 @@ void block_rotate(Block &block, Game_area &game_area, int direction, int type)
 }
 
 //该函数用于判断是否完成一行并进行消除下落
-void kill_row_fall(Block block, Game_area &game_area, int &total_score, int type)
+void kill_row_fall(tBlock block, tGame_area &game_area, int &total_score, int type)
 {
 	bool finished;
 	int target_row;
@@ -141,7 +141,7 @@ void kill_row_fall(Block block, Game_area &game_area, int &total_score, int type
 }
 
 //该函数用于判断游戏是否结束
-bool judge_end(Game_area &game_area)
+bool judge_end(tGame_area &game_area)
 {
 	for (int i = 0; i < game_area.matrix_col; i++)
 	{
@@ -164,7 +164,7 @@ bool judge_end(Game_area &game_area)
 }
 
 //伪图形界面下绘制边框和背景
-void print_GUI_game_area(Game_area game_area)
+void print_GUI_game_area(tGame_area game_area)
 {
 	setcolor(COLOR_HWHITE, 0);
 
@@ -209,7 +209,7 @@ void print_GUI_game_area(Game_area game_area)
 }
 
 //伪图形界面下绘制一个方块
-void draw_GUI_block(Block block, int value, int cord_x, int cord_y, int type)
+void draw_GUI_block(tBlock block, int value, int cord_x, int cord_y, int type)
 {
 	int bg_color = 0;//记录色块的背景色
 
@@ -245,7 +245,7 @@ void draw_GUI_block(Block block, int value, int cord_x, int cord_y, int type)
 }
 
 //伪图形界面下绘制完整数字方块
-void draw_full_block(Block block, Game_area &game_area, int type)
+void draw_full_block(tBlock block, tGame_area &game_area, int type)
 {
 	int dis_row, dis_col; //矩阵中某点到中心的行列距离
 	int draw_row, draw_col;

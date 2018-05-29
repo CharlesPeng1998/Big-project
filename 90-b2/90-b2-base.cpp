@@ -12,7 +12,7 @@
 #include "90-b2.h"
 using namespace std;
 
-const Block block_1 = { {
+const tBlock block_1 = { {
 		0,0,1,0,0,
 		0,0,1,0,0,
 		0,0,1,0,0,
@@ -20,7 +20,7 @@ const Block block_1 = { {
 		0,0,1,0,0
 	},{ 2,5 },{ 2,5 },1 };
 
-const Block block_2 = { {
+const tBlock block_2 = { {
 		0,1,1,1,0,
 		0,0,0,1,0,
 		0,1,1,1,0,
@@ -28,7 +28,7 @@ const Block block_2 = { {
 		0,1,1,1,0
 	},{ 2,5 },{ 2,5 },2 };
 
-const Block block_3 = { {
+const tBlock block_3 = { {
 		0,1,1,1,0,
 		0,0,0,1,0,
 		0,1,1,1,0,
@@ -36,7 +36,7 @@ const Block block_3 = { {
 		0,1,1,1,0
 	},{ 2,5 },{ 2,5 },3 };
 
-const Block block_4 = { {
+const tBlock block_4 = { {
 		0,1,0,1,0,
 		0,1,0,1,0,
 		0,1,1,1,0,
@@ -44,7 +44,7 @@ const Block block_4 = { {
 		0,0,0,1,0
 	},{ 2,5 },{ 2,5 },4 };
 
-const Block block_5 = { {
+const tBlock block_5 = { {
 		0,1,1,1,0,
 		0,1,0,0,0,
 		0,1,1,1,0,
@@ -52,7 +52,7 @@ const Block block_5 = { {
 		0,1,1,1,0
 	},{ 2,5 },{ 2,5 },5 };
 
-const Block block_6 = { {
+const tBlock block_6 = { {
 		0,1,1,1,0,
 		0,1,0,0,0,
 		0,1,1,1,0,
@@ -60,7 +60,7 @@ const Block block_6 = { {
 		0,1,1,1,0
 	},{ 2,5 },{ 2,5 },6 };
 
-const Block block_7 = { {
+const tBlock block_7 = { {
 		0,1,1,1,0,
 		0,0,0,1,0,
 		0,0,0,1,0,
@@ -68,7 +68,7 @@ const Block block_7 = { {
 		0,0,0,1,0
 	},{ 2,5 },{ 2,5 },7 };
 
-const Block block_8 = { {
+const tBlock block_8 = { {
 		0,1,1,1,0,
 		0,1,0,1,0,
 		0,1,1,1,0,
@@ -76,7 +76,7 @@ const Block block_8 = { {
 		0,1,1,1,0
 	},{ 2,5 },{ 2,5 },8 };
 
-const Block block_9 = { {
+const tBlock block_9 = { {
 		0,1,1,1,0,
 		0,1,0,1,0,
 		0,1,1,1,0,
@@ -84,7 +84,7 @@ const Block block_9 = { {
 		0,1,1,1,0
 	},{ 2,5 },{ 2,5 },9 };
 
-const Block block_0 = { {
+const tBlock block_0 = { {
 		0,1,1,1,0,
 		0,1,0,1,0,
 		0,1,0,1,0,
@@ -96,7 +96,7 @@ const Block block_0 = { {
 void GUI_tetris()
 {
 	//定义一个游戏区域结构体变量
-	Game_area game_area;
+	tGame_area game_area;
 
 	//定义一个控制台大小结构体变量
 	Consoleborder consoleborder;
@@ -140,7 +140,7 @@ void GUI_tetris()
 		exit(1);
 	}
 
-	Block curr_block;
+	tBlock curr_block;
 	int curr_num;
 	int next_num;
 	int next_copy=-1;
@@ -242,7 +242,7 @@ void GUI_tetris()
 /*侧边信息栏：下一个方块，当前分数*/
 void side_info(int next_num,int total_score)
 {
-	Block next_block;
+	tBlock next_block;
 	switch (next_num)
 	{
 	case 0:next_block = block_0; break;
@@ -257,7 +257,7 @@ void side_info(int next_num,int total_score)
 	case 9:next_block = block_9; break;
 	}
 
-	Game_area info_area;
+	tGame_area info_area;
 	info_area.matrix_col = 3;
 	info_area.matrix_row = 5+EXTRA_ROW;
 
@@ -271,7 +271,7 @@ void side_info(int next_num,int total_score)
 
 	draw_full_block(next_block, info_area, DRAW);
 
-	Game_area score_area; //显示当前分数的区域
+	tGame_area score_area; //显示当前分数的区域
 	score_area.matrix_col = 7;
 	score_area.matrix_row = 5 + EXTRA_ROW;
 
@@ -280,8 +280,8 @@ void side_info(int next_num,int total_score)
 
 	print_GUI_game_area(score_area);
 
-	Block score_first_num; //分数十位上的数
-	Block score_second_num; //分数个位上的数
+	tBlock score_first_num; //分数十位上的数
+	tBlock score_second_num; //分数个位上的数
 
 	int first_num = total_score / 10;
 	int second_num = total_score % 10;
