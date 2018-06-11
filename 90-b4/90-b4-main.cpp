@@ -44,6 +44,7 @@ int main()
 		qr_code[i].fill_matrix();
 	}
 
+	//选择掩模评分最低的二维码进行打印
 	int best = 0;
 	for (int i = 1; i < 8; i++)
 	{
@@ -53,23 +54,7 @@ int main()
 		}
 	}
 
-
 	qr_code[best].print_QR_code();
-
-#if 0
-	for (int i = 0; i < 8; i++)
-	{
-		qr_code[i].display();
-	}
-#endif 	
 		
-
-	
-		
-	
-
-
-	
 	return 0;
-
 }

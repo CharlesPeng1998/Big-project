@@ -15,7 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="90-b3.cpp">
+    <ClCompile Include="90-b5-main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="90-b5-tools.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="90-b5.h">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\cmd_console_tools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\common\common_cfgfile_tools.cpp">
@@ -23,6 +32,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\cmd_console_tools.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="..\common\common_cfgfile_tools.hpp">
       <Filter>头文件</Filter>
     </ClInclude>

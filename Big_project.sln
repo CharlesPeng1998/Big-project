@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QRcode", "QRcode\QRcode.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "90-b4", "90-b4\90-b4.vcxproj", "{585EF2C5-A226-49A9-AE43-F497284B2A71}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "90-b5", "90-b5\90-b5.vcxproj", "{101AE2D9-9648-47A0-9EEE-D650227AFE11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -91,6 +93,14 @@ Global
 		{585EF2C5-A226-49A9-AE43-F497284B2A71}.Release|x64.Build.0 = Release|x64
 		{585EF2C5-A226-49A9-AE43-F497284B2A71}.Release|x86.ActiveCfg = Release|Win32
 		{585EF2C5-A226-49A9-AE43-F497284B2A71}.Release|x86.Build.0 = Release|Win32
+		{101AE2D9-9648-47A0-9EEE-D650227AFE11}.Debug|x64.ActiveCfg = Debug|x64
+		{101AE2D9-9648-47A0-9EEE-D650227AFE11}.Debug|x64.Build.0 = Debug|x64
+		{101AE2D9-9648-47A0-9EEE-D650227AFE11}.Debug|x86.ActiveCfg = Debug|Win32
+		{101AE2D9-9648-47A0-9EEE-D650227AFE11}.Debug|x86.Build.0 = Debug|Win32
+		{101AE2D9-9648-47A0-9EEE-D650227AFE11}.Release|x64.ActiveCfg = Release|x64
+		{101AE2D9-9648-47A0-9EEE-D650227AFE11}.Release|x64.Build.0 = Release|x64
+		{101AE2D9-9648-47A0-9EEE-D650227AFE11}.Release|x86.ActiveCfg = Release|Win32
+		{101AE2D9-9648-47A0-9EEE-D650227AFE11}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

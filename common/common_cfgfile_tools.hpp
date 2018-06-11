@@ -22,7 +22,7 @@ struct cfgitem {
 	int type = NULL; /*该项的类别（在这个程序当中我们认为每一行都是一个项）
 					 因此项的类别有：注释(ANNOTATION)，值(VALUE)，空(NULL)*/
 
-	char cfg_item_value[128] = { 0 }; //值一律作为字符串处理
+	char cfg_item_value[257] = { 0 }; //值一律作为字符串处理
 	char annotation[50] = { 0 }; //记录该行的注释 
 	cfgitem *next=NULL;
 };

@@ -867,7 +867,7 @@ int item_get_value(fstream &fp, const char *group_name, const char *item_name, v
 					case TYPE_INT:istr >> *(int *)item_value; break;
 					case TYPE_DOUBLE:istr >> *(double *)item_value; break;
 					case TYPE_CHARACTER:istr >> *(char *)item_value; break;
-					case TYPE_STRING:istr >> (char *)item_value; break;
+					case TYPE_STRING:istr>>(char *)item_value; break;
 					case TYPE_NULL:return 0;
 					}
 

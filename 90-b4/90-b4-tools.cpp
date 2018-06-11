@@ -592,19 +592,19 @@ void QR_code::format_info()
 	switch (err_corre_level)
 	{
 	case LEVEL_M:
-		nFormatInfo = 0x00; // 00nnnb
+		nFormatInfo = 0x00; 
 		break;
 
 	case LEVEL_L:
-		nFormatInfo = 0x08; // 01nnnb
+		nFormatInfo = 0x08; 
 		break;
 
 	case LEVEL_Q:
-		nFormatInfo = 0x18; // 11nnnb
+		nFormatInfo = 0x18;
 		break;
 
-	default: // case QR_LEVEL_H:
-		nFormatInfo = 0x10; // 10nnnb
+	default:
+		nFormatInfo = 0x10; 
 		break;
 	}
 
@@ -616,13 +616,13 @@ void QR_code::format_info()
 	{
 		if (nFormatData & (1 << (14 - i)))
 		{
-			nFormatData ^= (0x0537 << (4 - i)); // 10100110111b
+			nFormatData ^= (0x0537 << (4 - i)); 
 		}
 	}
 
 	nFormatData += nFormatInfo << 10;
 
-	nFormatData ^= 0x5412; // 101010000010010b
+	nFormatData ^= 0x5412; 
 
 	format_data = nFormatData;
 
